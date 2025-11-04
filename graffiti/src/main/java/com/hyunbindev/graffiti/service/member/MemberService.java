@@ -3,13 +3,16 @@ package com.hyunbindev.graffiti.service.member;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.hyunbindev.graffiti.config.oauth.KakaoOauth2User;
 import com.hyunbindev.graffiti.constant.Role;
+import com.hyunbindev.graffiti.constant.exception.MemberExceptionConst;
+import com.hyunbindev.graffiti.data.member.MemberInfoDTO;
 import com.hyunbindev.graffiti.entity.MemberEntity;
+import com.hyunbindev.graffiti.exception.CommonAPIException;
 import com.hyunbindev.graffiti.repository.MemberRepository;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -46,5 +49,16 @@ public class MemberService {
 		user.setAuthority(Role.MEMBER);
 		user.setMemberUuid(member.getId());
 		return user;
+	}
+	/**
+	 * 회원 정보 조회
+	 * @param userUuid
+	 * @return memberInfoDTO
+	 */
+	@Transactional(readOnly = true)
+	public MemberInfoDTO getMemberInfo(String userUuid) {
+		MemberEntity member = memberRepository.findById(userUuid)
+				.orElseThrow(()-> new CommonAPIException(MemberExceptionConst.NOT_FOUND));
+		return new MemberInfoDTO(member);
 	}
 }

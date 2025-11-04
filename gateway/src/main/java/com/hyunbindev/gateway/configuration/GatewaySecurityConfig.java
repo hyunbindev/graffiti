@@ -13,8 +13,7 @@ public class GatewaySecurityConfig {
 	@Bean
 	public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
 		return http.csrf(ServerHttpSecurity.CsrfSpec::disable)
-				.authorizeExchange((exchanges -> exchanges.pathMatchers("/api/oauth2/**").permitAll()
-						.pathMatchers("/api/**").authenticated()))
+				.authorizeExchange((exchanges -> exchanges.anyExchange().permitAll()))
 				.httpBasic(ServerHttpSecurity.HttpBasicSpec::disable)
 				.formLogin(ServerHttpSecurity.FormLoginSpec::disable)
 				.build();

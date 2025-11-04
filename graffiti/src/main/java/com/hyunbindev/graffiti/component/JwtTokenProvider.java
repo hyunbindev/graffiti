@@ -40,9 +40,10 @@ public class JwtTokenProvider {
 		Date expireDate = new Date();
 		expireDate.setTime(now.getTime()+accessValidity);
 		Map<String, Object> payLoad = new HashMap<>();
-		
+		//사용자 닉네임
 		payLoad.put("nickname", auth.getNickName());
-		
+		//사용자 권한
+		payLoad.put("role", auth.getAuthorities());
 		return Jwts.builder()
 				.setHeader(header)
 				.setClaims(payLoad)
