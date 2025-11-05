@@ -7,6 +7,7 @@ import com.hyunbindev.graffiti.config.oauth.KakaoOauth2User;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -31,7 +32,7 @@ public class MemberEntity {
 	private String oauthKey;
 	
 	@Getter
-	@OneToMany
+	@OneToMany(fetch=FetchType.LAZY)
 	private List<GroupEntity> groups;
 	
 	@Column(unique = true, nullable = false)
