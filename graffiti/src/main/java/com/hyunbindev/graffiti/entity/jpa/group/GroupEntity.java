@@ -1,4 +1,4 @@
-package com.hyunbindev.graffiti.entity.jpa;
+package com.hyunbindev.graffiti.entity.jpa.group;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

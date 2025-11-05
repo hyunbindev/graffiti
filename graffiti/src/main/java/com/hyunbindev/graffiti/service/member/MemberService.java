@@ -9,7 +9,7 @@ import com.hyunbindev.graffiti.config.oauth.KakaoOauth2User;
 import com.hyunbindev.graffiti.constant.Role;
 import com.hyunbindev.graffiti.constant.exception.MemberExceptionConst;
 import com.hyunbindev.graffiti.data.member.MemberInfoDTO;
-import com.hyunbindev.graffiti.entity.jpa.MemberEntity;
+import com.hyunbindev.graffiti.entity.jpa.member.MemberEntity;
 import com.hyunbindev.graffiti.exception.CommonAPIException;
 import com.hyunbindev.graffiti.repository.jpa.MemberRepository;
 

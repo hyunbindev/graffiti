@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import com.hyunbindev.graffiti.entity.jpa.MemberEntity;
+import com.hyunbindev.graffiti.entity.jpa.member.MemberEntity;
 
 public interface MemberRepository extends JpaRepository<MemberEntity, String>{
 	Optional<MemberEntity> findByOauthKey(String ouathKey);
