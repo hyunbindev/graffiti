@@ -1,6 +1,6 @@
 package com.hyunbindev.graffiti.data.member;
 
-import com.hyunbindev.graffiti.entity.MemberEntity;
+import com.hyunbindev.graffiti.entity.jpa.MemberEntity;
 
 import lombok.Getter;
 

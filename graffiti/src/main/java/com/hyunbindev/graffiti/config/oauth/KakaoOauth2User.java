@@ -17,6 +17,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 public class KakaoOauth2User implements OAuth2User{
+	
 	private final String name;
 	@Getter
 	private final String profileUrl;

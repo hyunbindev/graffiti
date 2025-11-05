@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.hyunbindev.graffiti.component.JwtTokenProvider;
+import com.hyunbindev.graffiti.service.authentication.AuthenticationService;
 import com.hyunbindev.graffiti.service.member.MemberService;
 
 import jakarta.servlet.ServletException;
@@ -26,7 +27,8 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 public class OauthSuccessHandler implements AuthenticationSuccessHandler  {
 	private final MemberService memberService;
-	private final JwtTokenProvider jwtTokenProvider; 
+	private final JwtTokenProvider jwtTokenProvider;
+	private final AuthenticationService authenticationService;
 	@Value("${client.baseUrl}")
 	private String redirectClientUrl;
 	/**
@@ -41,7 +43,8 @@ public class OauthSuccessHandler implements AuthenticationSuccessHandler  {
 		kakaoAuthentication = memberService.assignMember(kakaoAuthentication);
 		
 		String accessToken = "Bearer "+ jwtTokenProvider.generateAccessToken(kakaoAuthentication);
-		Cookie refreshTokenCookie = new Cookie("refreshToken", "Bearer "+jwtTokenProvider.generateRefreshToken(kakaoAuthentication));
+		String refreshToken = jwtTokenProvider.generateRefreshToken(kakaoAuthentication);
+		Cookie refreshTokenCookie = new Cookie("refreshToken", refreshToken);
 		refreshTokenCookie.setHttpOnly(true);
 		refreshTokenCookie.setSecure(true);
 		refreshTokenCookie.setMaxAge((int) (jwtTokenProvider.getRefreshValidity() / 1000));
@@ -50,7 +53,7 @@ public class OauthSuccessHandler implements AuthenticationSuccessHandler  {
 				.queryParam("accessToken", URLEncoder.encode(accessToken, StandardCharsets.UTF_8.toString()))
 				.build()
 				.toUriString();
-		
+		authenticationService.saveRefreshToken(kakaoAuthentication.getMemberUuid(), refreshToken);
 		response.sendRedirect(redirectUrl);
 	}
 }

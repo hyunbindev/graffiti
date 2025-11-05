@@ -35,7 +35,7 @@ public class JwtAuthenticationFilter implements GlobalFilter{
 	public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
 		String path = exchange.getRequest().getURI().getPath();
 		log.info("request-path : ",path);
-		if(path.startsWith("/api/oauth2")) return chain.filter(exchange);
+		if(path.startsWith("/api/oauth2") || path.startsWith("/api/v1/authentication")) return chain.filter(exchange);
 		
 		String token = exchange.getRequest().getHeaders().getFirst("Authorization");
 		if(token == null || !token.startsWith("Bearer ")) {

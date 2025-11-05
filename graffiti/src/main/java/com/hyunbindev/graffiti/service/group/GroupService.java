@@ -6,11 +6,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.hyunbindev.graffiti.constant.exception.MemberExceptionConst;
 import com.hyunbindev.graffiti.data.group.CreateGroupDTO;
-import com.hyunbindev.graffiti.entity.GroupEntity;
-import com.hyunbindev.graffiti.entity.MemberEntity;
+import com.hyunbindev.graffiti.entity.jpa.GroupEntity;
+import com.hyunbindev.graffiti.entity.jpa.MemberEntity;
 import com.hyunbindev.graffiti.exception.CommonAPIException;
-import com.hyunbindev.graffiti.repository.GroupRepository;
-import com.hyunbindev.graffiti.repository.MemberRepository;
+import com.hyunbindev.graffiti.repository.jpa.GroupRepository;
+import com.hyunbindev.graffiti.repository.jpa.MemberRepository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

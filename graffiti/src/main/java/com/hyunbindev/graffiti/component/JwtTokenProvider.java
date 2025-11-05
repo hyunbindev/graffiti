@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 
 import com.hyunbindev.graffiti.config.oauth.KakaoOauth2User;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.extern.slf4j.Slf4j;
@@ -52,6 +53,20 @@ public class JwtTokenProvider {
 				.signWith(SignatureAlgorithm.HS256, accessSecretKey.getBytes())
 				.compact();
 	}
+	@SuppressWarnings("deprecation")
+	public String refreshAccessToken(Claims claims) {
+		Date now = new Date();
+		Date expireDate = new Date();
+		expireDate.setTime(now.getTime()+accessValidity);
+		
+		return Jwts.builder()
+				.setClaims(claims)
+				.setSubject(claims.getSubject())
+				.setExpiration(expireDate)
+				.signWith(SignatureAlgorithm.HS256, accessSecretKey.getBytes())
+				.compact();
+	}
+	
 	@SuppressWarnings("deprecation")
 	public String generateRefreshToken(KakaoOauth2User auth) {
 		Map<String, Object> header = new HashMap<>();

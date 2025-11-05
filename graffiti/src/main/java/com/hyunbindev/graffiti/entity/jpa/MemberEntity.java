@@ -1,4 +1,4 @@
-package com.hyunbindev.graffiti.entity;
+package com.hyunbindev.graffiti.entity.jpa;
 
 import java.time.LocalDateTime;
 import java.util.List;
