@@ -1,5 +1,6 @@
 package com.hyunbindev.gateway.filter;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -76,20 +77,15 @@ public class JwtAuthenticationFilter implements GlobalFilter{
         
         // JSON 응답 본문 구조화
         Map<String, Object> errorDetails = new HashMap<>();
-        errorDetails.put("timestamp", System.currentTimeMillis());
-        errorDetails.put("status", httpStatus.value());
+        errorDetails.put("time", LocalDateTime.now());
         errorDetails.put("error", httpStatus.getReasonPhrase());
         errorDetails.put("message", errorMsg); 
         try {
             // Map 객체를 JSON 바이트 배열로 변환
             byte[] bytes = objectMapper.writeValueAsBytes(errorDetails);
-            
-            // WebFlux 논블로킹 방식으로 응답 본문에 작성
             return response.writeWith(Mono.just(response.bufferFactory().wrap(bytes)));
             
         } catch (JsonProcessingException e) {
-            log.error("Error creating JSON response: {}", e.getMessage());
-            // JSON 변환 실패 시 (비상 처리)
             response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR);
             return response.setComplete();
         }

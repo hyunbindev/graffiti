@@ -4,6 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -66,5 +67,14 @@ public class GroupController {
 	public ResponseEntity<Void> outGroup(Authentication auth, @PathVariable(name="groupUuid") String groupUuid){
 		groupService.outGroup(auth.getName(), groupUuid);
 		return ResponseEntity.ok().build();
+	}
+	/**
+	 * 초대코드 미리 보기
+	 * @param code
+	 * @return
+	 */
+	@GetMapping("/v1/group/code/{code}/preview")
+	public ResponseEntity<String> previewGroupName(@PathVariable(name="code")String code){
+		return ResponseEntity.ok(groupService.previewGroupCode(code));
 	}
 }

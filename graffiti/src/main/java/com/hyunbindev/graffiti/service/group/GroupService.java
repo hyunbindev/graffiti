@@ -116,4 +116,20 @@ public class GroupService {
 			throw new CommonAPIException("이미 탈퇴가 완료 되었습니다.", HttpStatus.CONFLICT);
 		}
 	}
+	/**
+	 * preview group name by code
+	 * @param code
+	 * @return
+	 */
+	@Transactional(readOnly=true)
+	public String previewGroupCode(String code) {
+		GroupInviteCodeEntity codeEntity = groupInviteCodeRepository.findById(code)
+				.orElseThrow(()-> new CommonAPIException("기간이 만료된 코드 입니다.",HttpStatus.NOT_FOUND));
+		
+		log.debug("groupuuuuuuuid : {}",codeEntity.getGroupUuid());
+		GroupEntity group = groupRepository.findById(codeEntity.getGroupUuid())
+				.orElseThrow(()-> new CommonAPIException("잘못된 요청",HttpStatus.BAD_REQUEST));
+		
+		return group.getName();
+	}
 }

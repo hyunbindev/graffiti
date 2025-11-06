@@ -3,8 +3,8 @@ package com.hyunbindev.graffiti.constant.exception;
 import org.springframework.http.HttpStatus;
 
 public enum MemberExceptionConst implements ExceptionConst{
-	NOT_FOUND("회원을 찾을 수 없습니다.",HttpStatus.NOT_FOUND);
-	
+	NOT_FOUND("회원을 찾을 수 없습니다.",HttpStatus.NOT_FOUND),
+	UNAUTHORIZED("권한이 없습니다.", HttpStatus.UNAUTHORIZED);
 	private final String message;
 	private final HttpStatus status;
 	
