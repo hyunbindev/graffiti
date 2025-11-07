@@ -33,10 +33,12 @@ public class GlobalExceptionHandler {
 		exceptionBody.put("time", exception.getTime());
 		exceptionBody.put("message", exception.getMessage());
 		
-		if(exception.getDetail()!=null)exceptionBody.put("detail", exception.getDetail());
+		if(exception.getDetail()!=null)
+			exceptionBody.put("detail", exception.getDetail());
 		
 		return ResponseEntity.status(exception.getStatus()).body(exceptionBody);
 	}
+	
 	/**
 	 * not found Exception Handler
 	 * @param exception

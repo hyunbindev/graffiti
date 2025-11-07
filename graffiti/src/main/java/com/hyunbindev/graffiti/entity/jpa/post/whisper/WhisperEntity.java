@@ -3,7 +3,7 @@ package com.hyunbindev.graffiti.entity.jpa.post.whisper;
 import java.util.List;
 
 import com.hyunbindev.graffiti.entity.jpa.member.MemberEntity;
-import com.hyunbindev.graffiti.entity.jpa.post.PostBaseEntity;
+import com.hyunbindev.graffiti.entity.jpa.post.FeedBaseEntity;
 
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
@@ -18,7 +18,7 @@ import lombok.experimental.SuperBuilder;
 @DiscriminatorValue("whisper")
 @SuperBuilder
 @NoArgsConstructor
-public class WhisperEntity extends PostBaseEntity{
+public class WhisperEntity extends FeedBaseEntity{
 	@Lob
 	@Getter
 	private String text;

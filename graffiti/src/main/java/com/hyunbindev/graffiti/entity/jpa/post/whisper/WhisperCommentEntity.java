@@ -27,7 +27,7 @@ import lombok.Setter;
 @Builder
 public class WhisperCommentEntity {
 	@Id
-	@GeneratedValue(strategy=GenerationType.SEQUENCE)
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Getter
 	private Long id;
 	

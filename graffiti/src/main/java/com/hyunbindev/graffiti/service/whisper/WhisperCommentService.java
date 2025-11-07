@@ -1,10 +1,14 @@
 package com.hyunbindev.graffiti.service.whisper;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.hyunbindev.graffiti.constant.exception.MemberExceptionConst;
 import com.hyunbindev.graffiti.constant.exception.WhisperExceptionConst;
+import com.hyunbindev.graffiti.data.member.MemberInfoDTO;
+import com.hyunbindev.graffiti.data.whisper.WhisperCommentDTO;
 import com.hyunbindev.graffiti.data.whisper.WhisperCreateCommentDTO;
 import com.hyunbindev.graffiti.entity.jpa.member.MemberEntity;
 import com.hyunbindev.graffiti.entity.jpa.post.whisper.WhisperCommentEntity;
@@ -24,7 +28,6 @@ public class WhisperCommentService {
 	private final WhisperCommentRepository whisperCommentRepository;
 	private final WhisperRepository whisperRepository;
 	private final MemberRepository memberRepository;
-	
 	/**
 	 * Whiper feed 덧글 생성
 	 * @author hyunbinDev
@@ -64,6 +67,33 @@ public class WhisperCommentService {
 				.build();
 		
 		whisperCommentRepository.save(comment);
+	}
+	/**
+	 * whisper feed comment 조회
+	 * @param userUuid
+	 * @param whisperId
+	 * @return
+	 */
+	@Transactional(readOnly=true)
+	public List<WhisperCommentDTO> getWhisperComments(String userUuid, Long whisperId) {
+		MemberEntity user = memberRepository.findById(userUuid)
+				.orElseThrow(()-> new CommonAPIException(MemberExceptionConst.NOT_FOUND));
+		
+		WhisperEntity whisper = whisperRepository.findById(whisperId)
+				.orElseThrow(()->new CommonAPIException(WhisperExceptionConst.NOT_FOUND_FEED));
+		
+		//그룹 가입 안되어 있을시
+		if(!user.getGroups().contains(whisper.getGroup()))
+			throw new CommonAPIException(MemberExceptionConst.UNAUTHORIZED);
+		
+		//조회 제한된 게시글 덧글 조회시
+		if(whisper.getMentionMembers().contains(user))
+			throw new CommonAPIException(WhisperExceptionConst.FORBIDDEN);
+		
+		//Dto mapping 후 리턴
+		return whisperCommentRepository.findCommentsByWhisperWithAuthor(whisper).stream()
+				.map((entity)->WhisperCommentDTO.mappingDTO(entity))
+				.toList();
 	}
 	/**
 	 * 덧글 삭제 처리

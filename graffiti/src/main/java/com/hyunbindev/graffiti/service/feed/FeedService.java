@@ -12,11 +12,10 @@ import com.hyunbindev.graffiti.constant.exception.MemberExceptionConst;
 import com.hyunbindev.graffiti.constant.feed.FeedType;
 import com.hyunbindev.graffiti.data.member.MemberInfoDTO;
 import com.hyunbindev.graffiti.data.post.PostPreViewDTO;
-import com.hyunbindev.graffiti.data.post.VotePreViewDTO;
 import com.hyunbindev.graffiti.data.post.WhisperPreViewDTO;
 import com.hyunbindev.graffiti.data.post.WhisperPreViewDTO.WhisperPreViewDTOBuilder;
 import com.hyunbindev.graffiti.entity.jpa.member.MemberEntity;
-import com.hyunbindev.graffiti.entity.jpa.post.PostBaseEntity;
+import com.hyunbindev.graffiti.entity.jpa.post.FeedBaseEntity;
 import com.hyunbindev.graffiti.entity.jpa.post.whisper.WhisperEntity;
 import com.hyunbindev.graffiti.exception.CommonAPIException;
 import com.hyunbindev.graffiti.repository.jpa.MemberRepository;
@@ -32,7 +31,13 @@ public class FeedService {
 	private final PostBaseRepository postBaseRepository;
 	private final MemberRepository memberRepository;
 	
-	
+	/**
+	 * 최신순 전체 피드 조회
+	 * @param userUuid
+	 * @param page
+	 * @param offest
+	 * @return
+	 */
 	@Transactional(readOnly=true)
 	public List<PostPreViewDTO> getRecentPostPreviewWithPage(String userUuid, int page, int offest) {
 		MemberEntity userEntity = memberRepository.findById(userUuid)
@@ -40,45 +45,22 @@ public class FeedService {
 		
 		Pageable pageable = PageRequest.of(page, offest, Sort.by(Sort.Direction.DESC, "createdAt"));
 		
-		List<PostBaseEntity> postBaseEntitys = postBaseRepository.findByGroupInAndDeletedFalse(userEntity.getGroups(), pageable);
+		List<FeedBaseEntity> postBaseEntitys = postBaseRepository.findByGroupInAndDeletedFalse(userEntity.getGroups(), pageable);
 		
 		return postBaseEntitys.stream().map((post)->mappingPreviewDto(post,userEntity)).toList();
 	}
 	/**
-	 * 게시글 미리보기 전처리 메서드
+	 * 게시글 미리보기 DTO 매핑 메서드
 	 * @author hyunbinDev
 	 * @param entity
 	 * @param userEntity
 	 * @return extended PostPreViewDTO
 	 */
-	private PostPreViewDTO mappingPreviewDto(PostBaseEntity entity, MemberEntity userEntity) {
-		//Whisper 게시글일 경우 전처리
+	private PostPreViewDTO mappingPreviewDto(FeedBaseEntity entity, MemberEntity userEntity) {
+		//Whisper 게시글일 경우 dto 매핑
 		if(entity instanceof WhisperEntity whisper) {
-			WhisperPreViewDTOBuilder<?,?> whisperPreViewDTOBuilder =WhisperPreViewDTO.builder()
-					.id(entity.getId())
-					//공통 필드
-					//피드 타입 명시
-					.type(FeedType.WHISPER)
-					//생성 날자
-					.createdAt(entity.getCreatedAt());
-			
-			//언급 대상 비공개시
-			if(whisper.isInvisibleMention() && whisper.getMentionMembers().contains(userEntity)) {
-				whisperPreViewDTOBuilder.isBlinded(true)
-				.previewText("비공개 게시글 입니다.");
-			}else {
-				//작성자
-				MemberInfoDTO authorDto = new MemberInfoDTO(whisper.getAuthor());
-				whisperPreViewDTOBuilder.authorInfo(authorDto)
-				//언급 대상자
-				.mentionMember(whisper.getMentionMembers().stream().map((m)-> new MemberInfoDTO(m)).toList())
-				.isBlinded(false)
-				//글 미리보기 50글자 제한
-				.previewText(whisper.getText().substring(Math.min(whisper.getText().length(), 50)));
-			}
-			return whisperPreViewDTOBuilder.build();
+			return WhisperPreViewDTO.mappingDTO(whisper);
 		}
-		
 		return null;
 	}
 }
