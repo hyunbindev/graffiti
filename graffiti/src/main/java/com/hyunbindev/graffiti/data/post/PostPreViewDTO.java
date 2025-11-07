@@ -2,15 +2,19 @@ package com.hyunbindev.graffiti.data.post;
 
 import java.time.LocalDateTime;
 
+import com.hyunbindev.graffiti.constant.feed.FeedType;
 import com.hyunbindev.graffiti.data.member.MemberInfoDTO;
 
-import lombok.Builder;
 import lombok.Getter;
+import lombok.experimental.SuperBuilder;
 
-@Builder
 @Getter
-public class PostPreViewDTO {
+@SuperBuilder
+public abstract class PostPreViewDTO {
+	private FeedType type;
+	private Long id;
 	private MemberInfoDTO authorInfo;
 	private LocalDateTime createdAt;
 	private String previewText;
+	private boolean isBlinded;
 }

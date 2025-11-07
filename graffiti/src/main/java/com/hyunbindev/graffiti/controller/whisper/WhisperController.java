@@ -23,7 +23,7 @@ public class WhisperController {
 	private final WhisperService whisperService;
 	@PostMapping
 	public ResponseEntity<Void> createWhisperPost(Authentication auth, @RequestBody @Valid WhisperCreateDTO createDto){
-		whisperService.createWhisperPost(auth.getName(), createDto);
+		whisperService.createWhisperFeed(auth.getName(), createDto);
 		return ResponseEntity.status(HttpStatus.CREATED).build();
 	}
 }

@@ -1,7 +1,10 @@
 package com.hyunbindev.graffiti.constant.exception;
 
 import org.springframework.http.HttpStatus;
-
+/**
+ * jwt token, 및 사용자 인증, 인가 관련 상수
+ * @author hyunbinDev
+ */
 public enum AuthenticationExceptionConst implements ExceptionConst{
 	INVALID_JWT_TOKEN("잘못된 인증 정보 입니다.",HttpStatus.UNAUTHORIZED),
 	NO_VALIDITY("인증시간이 만료되었습니다. 다시 로그인 해주세요",HttpStatus.UNAUTHORIZED);
