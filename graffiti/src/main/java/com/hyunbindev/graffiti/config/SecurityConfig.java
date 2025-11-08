@@ -28,6 +28,7 @@ public class SecurityConfig {
 		http.csrf(CsrfConfigurer::disable)
 		.formLogin(FormLoginConfigurer::disable)
 		.sessionManagement((session)->session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+		//TODO-/acturator 오픈되어있음 수정 해야함
 		.authorizeHttpRequests(auth->auth.requestMatchers("/api/oauth2/**","/error","/api/v1/authentication/**","/actuator/**").permitAll().anyRequest().authenticated())
 		.oauth2Login(customConfigurer-> customConfigurer
 				.authorizationEndpoint(authorization->authorization.baseUri("/api/oauth2/authorization"))
