@@ -57,8 +57,10 @@ public class MemberService {
 	 */
 	@Transactional(readOnly = true)
 	public MemberInfoDTO getMemberInfo(String userUuid) {
+		
 		MemberEntity member = memberRepository.findById(userUuid)
 				.orElseThrow(()-> new CommonAPIException(MemberExceptionConst.NOT_FOUND));
+		
 		return new MemberInfoDTO(member);
 	}
 }

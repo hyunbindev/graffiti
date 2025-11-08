@@ -8,9 +8,11 @@ import com.hyunbindev.graffiti.entity.jpa.post.whisper.WhisperEntity;
 
 import lombok.Getter;
 import lombok.experimental.SuperBuilder;
+import lombok.extern.slf4j.Slf4j;
 
 @SuperBuilder
 @Getter
+@Slf4j
 public class WhisperPreViewDTO extends PostPreViewDTO{
 	List<MemberInfoDTO> mentionMember;
 	/**
@@ -32,6 +34,8 @@ public class WhisperPreViewDTO extends PostPreViewDTO{
 			whisperPreViewDTOBuilder.isBlinded(true)
 			.previewText("비공개 게시글 입니다.");
 		}else {
+			//미리보기
+			String preViewText = entity.getText().substring(0, Math.min(entity.getText().length(), 50));
 			//작성자
 			MemberInfoDTO authorDto = new MemberInfoDTO(entity.getAuthor());
 			whisperPreViewDTOBuilder.authorInfo(authorDto)
@@ -39,7 +43,8 @@ public class WhisperPreViewDTO extends PostPreViewDTO{
 			.mentionMember(entity.getMentionMembers().stream().map((m)-> new MemberInfoDTO(m)).toList())
 			.isBlinded(false)
 			//글 미리보기 50글자 제한
-			.previewText(entity.getText().substring(Math.min(entity.getText().length(), 50)));
+			//.previewText(entity.getText().substring(Math.min(entity.getText().length(), 50)));
+			.previewText(preViewText);
 		}
 		return whisperPreViewDTOBuilder.build();
 	}

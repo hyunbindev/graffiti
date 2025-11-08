@@ -15,8 +15,8 @@ import com.hyunbindev.graffiti.entity.jpa.member.MemberEntity;
 import com.hyunbindev.graffiti.entity.jpa.post.whisper.WhisperEntity;
 import com.hyunbindev.graffiti.entity.jpa.post.whisper.WhisperEntity.WhisperEntityBuilder;
 import com.hyunbindev.graffiti.exception.CommonAPIException;
-import com.hyunbindev.graffiti.repository.jpa.GroupRepository;
 import com.hyunbindev.graffiti.repository.jpa.MemberRepository;
+import com.hyunbindev.graffiti.repository.jpa.group.GroupRepository;
 import com.hyunbindev.graffiti.repository.jpa.whisper.WhisperRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -36,14 +36,14 @@ public class WhisperService {
 	 */
 	@Transactional
 	public void createWhisperFeed(String userUuid ,WhisperCreateDTO createDto) {
-		MemberEntity author = memberRepository.findByIdWithGroups(userUuid)
+		MemberEntity author = memberRepository.findById(userUuid)
 				.orElseThrow(()-> new CommonAPIException(MemberExceptionConst.UNAUTHORIZED));
 		
 		GroupEntity group = groupRepository.findById(createDto.getGroupUuid())
 				.orElseThrow(()-> new CommonAPIException("그룹을 찾을 수 없습니다.",HttpStatus.NOT_FOUND));
 		
 		//그룹에 속하지 않을 시에 예외 처리
-		if(!author.getGroups().contains(group))
+		if(!author.isInGroup(group))
 			throw new CommonAPIException(MemberExceptionConst.UNAUTHORIZED);
 		
 		WhisperEntityBuilder<?,?> whisperEntityBuilder = WhisperEntity.builder()
@@ -57,8 +57,8 @@ public class WhisperService {
 			List<MemberEntity> mentions = memberRepository.findAllById(createDto.getMentionMembers());
 			//언급 사용자 존재시
 			for(MemberEntity mention : mentions) {
-				boolean belongs = mention.getGroups().stream()
-						.anyMatch(g-> g.getId().equals(group.getId()));
+				boolean belongs = mention.getGroupLinks().stream()
+						.anyMatch(link-> link.getGroup().getId().equals(group.getId()));
 				//언급사용자가 해당 그룹에 참여하고 있지 않을경우 예외 처리
 				if(!belongs) throw new CommonAPIException(MemberExceptionConst.UNAUTHORIZED);
 			}
@@ -69,14 +69,14 @@ public class WhisperService {
 	
 	@Transactional(readOnly=true)
 	public WhisperDTO getWhisperFeed(String userUuid ,Long feedId) {
-		MemberEntity user = memberRepository.findByIdWithGroups(userUuid)
+		MemberEntity user = memberRepository.findById(userUuid)
 				.orElseThrow(()-> new CommonAPIException(MemberExceptionConst.UNAUTHORIZED));
 		
 		WhisperEntity whisper = whisperRepository.findByIdWithAuthor(feedId)
 				.orElseThrow(()->new CommonAPIException(WhisperExceptionConst.NOT_FOUND_FEED));
 		
 		//소속 그룹 검증
-		if(!user.getGroups().contains(whisper.getGroup()))
+		if(!user.isInGroup(whisper.getGroup()))
 			throw new CommonAPIException(MemberExceptionConst.UNAUTHORIZED);
 		//언급 검증
 		if(whisper.isInvisibleMention() && whisper.getMentionMembers().contains(user))

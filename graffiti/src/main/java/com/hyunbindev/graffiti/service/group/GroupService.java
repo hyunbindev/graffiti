@@ -10,11 +10,13 @@ import com.hyunbindev.graffiti.constant.exception.MemberExceptionConst;
 import com.hyunbindev.graffiti.data.group.CreateGroupDTO;
 import com.hyunbindev.graffiti.data.group.JoinGroupDTO;
 import com.hyunbindev.graffiti.entity.jpa.group.GroupEntity;
+import com.hyunbindev.graffiti.entity.jpa.group.MemberGroupLinkedEntity;
 import com.hyunbindev.graffiti.entity.jpa.member.MemberEntity;
 import com.hyunbindev.graffiti.entity.redis.group.GroupInviteCodeEntity;
 import com.hyunbindev.graffiti.exception.CommonAPIException;
-import com.hyunbindev.graffiti.repository.jpa.GroupRepository;
 import com.hyunbindev.graffiti.repository.jpa.MemberRepository;
+import com.hyunbindev.graffiti.repository.jpa.group.GroupRepository;
+import com.hyunbindev.graffiti.repository.jpa.group.MemberGroupLinkedRepository;
 import com.hyunbindev.graffiti.repository.redis.group.GroupInviteCodeRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -26,7 +28,9 @@ import lombok.extern.slf4j.Slf4j;
 public class GroupService {
 	private final GroupRepository groupRepository;
 	private final MemberRepository memberRepository;
+	private final MemberGroupLinkedRepository memberGroupLinkedRepository;
 	private final GroupInviteCodeRepository groupInviteCodeRepository;
+	
 	/**
 	 * Group 생성
 	 * @param userUuid
@@ -42,7 +46,14 @@ public class GroupService {
 		
 		group = groupRepository.save(group);
 		
-		member.getGroups().add(group);
+		MemberGroupLinkedEntity memberGoupLinkEntity = new MemberGroupLinkedEntity(member,group);
+		
+		member.getGroupLinks().add(memberGoupLinkEntity);
+		
+		group.getGroupLinks().add(memberGoupLinkEntity);
+		
+		memberGroupLinkedRepository.save(memberGoupLinkEntity);
+		groupRepository.save(group);
 	}
 	/**
 	 * 그룹 참여
@@ -53,7 +64,7 @@ public class GroupService {
 	 */
 	@Transactional
 	public void joinGroup(String userUuid, JoinGroupDTO joinDto) {
-		MemberEntity member = memberRepository.findByIdWithGroups(userUuid)
+		MemberEntity member = memberRepository.findById(userUuid)
 				.orElseThrow(()-> new CommonAPIException(MemberExceptionConst.NOT_FOUND));
 		
 		GroupInviteCodeEntity codeEntity = groupInviteCodeRepository.findById(joinDto.getCode())
@@ -65,9 +76,11 @@ public class GroupService {
 				.orElseThrow(()-> new CommonAPIException("그룹을 찾을 수 없습니다.",HttpStatus.NOT_FOUND));
 		
 		//이미 그룹 참여시 예외 처리
-		if(member.getGroups().contains(group)) throw new CommonAPIException("이미 그룹에 참여하고 있습니다.",HttpStatus.CONFLICT);
+		if(member.isInGroup(group)) throw new CommonAPIException("이미 그룹에 참여하고 있습니다.",HttpStatus.CONFLICT);
 		
-		member.getGroups().add(group);
+		MemberGroupLinkedEntity groupLink = memberGroupLinkedRepository.save(new MemberGroupLinkedEntity(member,group));
+		
+		member.getGroupLinks().add(groupLink);
 	}
 	/**
 	 * 초대 코드 생성
@@ -77,14 +90,14 @@ public class GroupService {
 	 */
 	@Transactional(readOnly=true)
 	public String createInviteCode(String userUuid, String groupUuid) {
-		MemberEntity member = memberRepository.findByIdWithGroups(userUuid)
+		MemberEntity member = memberRepository.findById(userUuid)
 				.orElseThrow(()->new CommonAPIException(MemberExceptionConst.NOT_FOUND));
 		
 		GroupEntity group = groupRepository.findById(groupUuid)
 				.orElseThrow(()-> new CommonAPIException("그룹을 찾을 수 없습니다.",HttpStatus.NOT_FOUND));
 		
 		//그룹에 가입하지 않은 사용자에 대해 예외 처리
-		if(!member.getGroups().contains(group)) throw new CommonAPIException("그룹 초대 권한이 없습니다.",HttpStatus.UNAUTHORIZED);
+		if(!member.isInGroup(group)) throw new CommonAPIException("그룹 초대 권한이 없습니다.",HttpStatus.UNAUTHORIZED);
 		
 		UUID invitedCode = UUID.randomUUID();
 		
@@ -109,9 +122,11 @@ public class GroupService {
 		MemberEntity member = memberRepository.findById(userUuid)
 				.orElseThrow(()-> new CommonAPIException(MemberExceptionConst.NOT_FOUND));
 		
-		boolean removed = member.getGroups().removeIf(group -> group.getId().equals(groupUuid));
+		GroupEntity group = groupRepository.findById(groupUuid)
+				.orElseThrow(()-> new CommonAPIException("그룹을 찾을 수 없습니다", HttpStatus.NOT_FOUND));
 		
-		if(!removed) {
+		
+		if(!member.isInGroup(group)) {
 			log.warn("Group not found in member's list or already removed. userUuid: {} groupUuid {}", userUuid, groupUuid);
 			throw new CommonAPIException("이미 탈퇴가 완료 되었습니다.", HttpStatus.CONFLICT);
 		}

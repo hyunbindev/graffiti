@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.hyunbindev.graffiti.config.oauth.KakaoOauth2User;
 import com.hyunbindev.graffiti.entity.jpa.group.GroupEntity;
+import com.hyunbindev.graffiti.entity.jpa.group.MemberGroupLinkedEntity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -33,10 +34,10 @@ public class MemberEntity {
 	private String oauthKey;
 	
 	@Getter
-	@OneToMany(fetch=FetchType.LAZY)
-	private List<GroupEntity> groups;
+	@OneToMany(mappedBy = "member",fetch=FetchType.LAZY)
+	private List<MemberGroupLinkedEntity> groupLinks;
 	
-	@Column(unique = true, nullable = false)
+	@Column(unique = false, nullable = false)
 	@Getter
 	private String nickName;
 	
@@ -50,5 +51,16 @@ public class MemberEntity {
 		this.nickName = user.getNickName();
 		this.profileImg = user.getProfileUrl();
 		this.lastLogin = user.getConnectedTime();
+	}
+	/**
+	 * 그룹 참여 여부 확인
+	 * @param groupEntity
+	 * @return
+	 */
+	public boolean isInGroup(GroupEntity groupEntity) {
+		for(MemberGroupLinkedEntity link : this.groupLinks) {
+			if(link.getGroup().equals(groupEntity)) return true;
+		}
+		return false;
 	}
 }

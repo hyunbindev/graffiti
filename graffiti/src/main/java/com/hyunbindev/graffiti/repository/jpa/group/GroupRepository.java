@@ -1,4 +1,4 @@
-package com.hyunbindev.graffiti.repository.jpa;
+package com.hyunbindev.graffiti.repository.jpa.group;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

@@ -49,7 +49,7 @@ public class WhisperCommentService {
 			throw new CommonAPIException(WhisperExceptionConst.NOT_FOUND_FEED);
 		
 		//그룹에 포함되지 않은 사용자가 덧글 작성 시도시 예외 처리
-		if(!author.getGroups().contains(whisper.getGroup()))
+		if(!author.isInGroup(whisper.getGroup()))
 			throw new CommonAPIException(MemberExceptionConst.UNAUTHORIZED);
 		
 		//언급 사용자 조회 금지시 예외 처리
@@ -83,7 +83,7 @@ public class WhisperCommentService {
 				.orElseThrow(()->new CommonAPIException(WhisperExceptionConst.NOT_FOUND_FEED));
 		
 		//그룹 가입 안되어 있을시
-		if(!user.getGroups().contains(whisper.getGroup()))
+		if(!user.isInGroup(whisper.getGroup()))
 			throw new CommonAPIException(MemberExceptionConst.UNAUTHORIZED);
 		
 		//조회 제한된 게시글 덧글 조회시

@@ -9,11 +9,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.hyunbindev.graffiti.constant.exception.MemberExceptionConst;
-import com.hyunbindev.graffiti.constant.feed.FeedType;
-import com.hyunbindev.graffiti.data.member.MemberInfoDTO;
 import com.hyunbindev.graffiti.data.post.PostPreViewDTO;
 import com.hyunbindev.graffiti.data.post.WhisperPreViewDTO;
-import com.hyunbindev.graffiti.data.post.WhisperPreViewDTO.WhisperPreViewDTOBuilder;
+import com.hyunbindev.graffiti.entity.jpa.group.GroupEntity;
 import com.hyunbindev.graffiti.entity.jpa.member.MemberEntity;
 import com.hyunbindev.graffiti.entity.jpa.post.FeedBaseEntity;
 import com.hyunbindev.graffiti.entity.jpa.post.whisper.WhisperEntity;
@@ -45,7 +43,12 @@ public class FeedService {
 		
 		Pageable pageable = PageRequest.of(page, offest, Sort.by(Sort.Direction.DESC, "createdAt"));
 		
-		List<FeedBaseEntity> postBaseEntitys = postBaseRepository.findByGroupInAndDeletedFalse(userEntity.getGroups(), pageable);
+		//사용자 그룹 리스트
+		List<GroupEntity> groups = userEntity.getGroupLinks().stream()
+				.map((link)->link.getGroup())
+				.toList();
+		
+		List<FeedBaseEntity> postBaseEntitys = postBaseRepository.findByGroupInAndDeletedFalse(groups, pageable);
 		
 		return postBaseEntitys.stream().map((post)->mappingPreviewDto(post,userEntity)).toList();
 	}
