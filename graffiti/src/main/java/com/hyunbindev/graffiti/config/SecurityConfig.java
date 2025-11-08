@@ -28,7 +28,7 @@ public class SecurityConfig {
 		http.csrf(CsrfConfigurer::disable)
 		.formLogin(FormLoginConfigurer::disable)
 		.sessionManagement((session)->session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-		.authorizeHttpRequests(auth->auth.requestMatchers("/api/oauth2/**","/error","/api/v1/authentication/**").permitAll().anyRequest().authenticated())
+		.authorizeHttpRequests(auth->auth.requestMatchers("/api/oauth2/**","/error","/api/v1/authentication/**","/actuator/**").permitAll().anyRequest().authenticated())
 		.oauth2Login(customConfigurer-> customConfigurer
 				.authorizationEndpoint(authorization->authorization.baseUri("/api/oauth2/authorization"))
 				.failureHandler(oauthFailHandler)
