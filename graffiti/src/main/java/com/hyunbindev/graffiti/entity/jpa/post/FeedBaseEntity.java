@@ -53,6 +53,10 @@ public class FeedBaseEntity {
 	@Getter
 	private LocalDateTime createdAt;
 	
+	@Getter
+	@Setter
+	long viewCount;
+	
 	//Soft delete 필드
 	@Getter
 	@Setter
