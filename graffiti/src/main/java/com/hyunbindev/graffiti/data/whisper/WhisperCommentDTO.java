@@ -3,7 +3,7 @@ package com.hyunbindev.graffiti.data.whisper;
 import java.time.LocalDateTime;
 
 import com.hyunbindev.graffiti.data.member.MemberInfoDTO;
-import com.hyunbindev.graffiti.entity.jpa.post.whisper.WhisperCommentEntity;
+import com.hyunbindev.graffiti.entity.jpa.post.FeedCommentEntity;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -16,7 +16,7 @@ public class WhisperCommentDTO {
 	private LocalDateTime createdAt;
 	private String text;
 	
-	public static WhisperCommentDTO mappingDTO(WhisperCommentEntity entity) {
+	public static WhisperCommentDTO mappingDTO(FeedCommentEntity entity) {
 		return WhisperCommentDTO.builder()
 				.id(entity.getId())
 				.author(new MemberInfoDTO(entity.getAuthor()))

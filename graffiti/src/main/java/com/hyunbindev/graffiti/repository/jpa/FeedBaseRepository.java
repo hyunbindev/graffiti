@@ -8,7 +8,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import com.hyunbindev.graffiti.entity.jpa.group.GroupEntity;
 import com.hyunbindev.graffiti.entity.jpa.post.FeedBaseEntity;
 
-public interface PostBaseRepository extends JpaRepository<FeedBaseEntity,Long>{
-	
+public interface FeedBaseRepository extends JpaRepository<FeedBaseEntity,Long>{
 	List<FeedBaseEntity> findByGroupInAndDeletedFalse(List<GroupEntity> groups, Pageable pageable);
 }

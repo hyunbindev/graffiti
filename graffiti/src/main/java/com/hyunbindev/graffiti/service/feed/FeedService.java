@@ -16,8 +16,8 @@ import com.hyunbindev.graffiti.entity.jpa.member.MemberEntity;
 import com.hyunbindev.graffiti.entity.jpa.post.FeedBaseEntity;
 import com.hyunbindev.graffiti.entity.jpa.post.whisper.WhisperEntity;
 import com.hyunbindev.graffiti.exception.CommonAPIException;
+import com.hyunbindev.graffiti.repository.jpa.FeedBaseRepository;
 import com.hyunbindev.graffiti.repository.jpa.MemberRepository;
-import com.hyunbindev.graffiti.repository.jpa.PostBaseRepository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,7 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Slf4j
 public class FeedService {
-	private final PostBaseRepository postBaseRepository;
+	private final FeedBaseRepository feedBaseRepository;
 	private final MemberRepository memberRepository;
 	
 	/**
@@ -48,7 +48,7 @@ public class FeedService {
 				.map((link)->link.getGroup())
 				.toList();
 		
-		List<FeedBaseEntity> postBaseEntitys = postBaseRepository.findByGroupInAndDeletedFalse(groups, pageable);
+		List<FeedBaseEntity> postBaseEntitys = feedBaseRepository.findByGroupInAndDeletedFalse(groups, pageable);
 		
 		return postBaseEntitys.stream().map((post)->mappingPreviewDto(post,userEntity)).toList();
 	}

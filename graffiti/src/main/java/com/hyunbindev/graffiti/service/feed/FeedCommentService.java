@@ -1,4 +1,4 @@
-package com.hyunbindev.graffiti.service.whisper;
+package com.hyunbindev.graffiti.service.feed;
 
 import java.util.List;
 
@@ -7,15 +7,15 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.hyunbindev.graffiti.constant.exception.MemberExceptionConst;
 import com.hyunbindev.graffiti.constant.exception.WhisperExceptionConst;
-import com.hyunbindev.graffiti.data.member.MemberInfoDTO;
+import com.hyunbindev.graffiti.data.whisper.CreateCommentDTO;
 import com.hyunbindev.graffiti.data.whisper.WhisperCommentDTO;
-import com.hyunbindev.graffiti.data.whisper.WhisperCreateCommentDTO;
 import com.hyunbindev.graffiti.entity.jpa.member.MemberEntity;
-import com.hyunbindev.graffiti.entity.jpa.post.whisper.WhisperCommentEntity;
+import com.hyunbindev.graffiti.entity.jpa.post.FeedBaseEntity;
+import com.hyunbindev.graffiti.entity.jpa.post.FeedCommentEntity;
 import com.hyunbindev.graffiti.entity.jpa.post.whisper.WhisperEntity;
 import com.hyunbindev.graffiti.exception.CommonAPIException;
+import com.hyunbindev.graffiti.repository.jpa.FeedCommentRepository;
 import com.hyunbindev.graffiti.repository.jpa.MemberRepository;
-import com.hyunbindev.graffiti.repository.jpa.whisper.WhisperCommentRepository;
 import com.hyunbindev.graffiti.repository.jpa.whisper.WhisperRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -24,8 +24,8 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class WhisperCommentService {
-	private final WhisperCommentRepository whisperCommentRepository;
+public class FeedCommentService {
+	private final FeedCommentRepository feedCommentRepository;
 	private final WhisperRepository whisperRepository;
 	private final MemberRepository memberRepository;
 	/**
@@ -37,7 +37,7 @@ public class WhisperCommentService {
 	 * @param createDto
 	 */
 	@Transactional
-	public void createWhisperComment(String userUuid, Long whisperFeedId, WhisperCreateCommentDTO createDto) {
+	public void createWhisperComment(String userUuid, Long whisperFeedId, CreateCommentDTO createDto) {
 		MemberEntity author = memberRepository.findById(userUuid)
 				.orElseThrow(()-> new CommonAPIException(MemberExceptionConst.NOT_FOUND));
 		
@@ -56,9 +56,9 @@ public class WhisperCommentService {
 		if(whisper.isInvisibleMention() && whisper.getMentionMembers().contains(author))
 			throw new CommonAPIException(WhisperExceptionConst.FORBIDDEN);
 		
-		WhisperCommentEntity comment = WhisperCommentEntity.builder()
+		FeedCommentEntity comment = FeedCommentEntity.builder()
 				//부모 게시글 설정
-				.whisper(whisper)
+				.feed(whisper)
 				//작성자 설정
 				.author(author)
 				//내용
@@ -66,7 +66,7 @@ public class WhisperCommentService {
 				.deleted(false)
 				.build();
 		
-		whisperCommentRepository.save(comment);
+		feedCommentRepository.save(comment);
 	}
 	/**
 	 * whisper feed comment 조회
@@ -91,7 +91,7 @@ public class WhisperCommentService {
 			throw new CommonAPIException(WhisperExceptionConst.FORBIDDEN);
 		
 		//Dto mapping 후 리턴
-		return whisperCommentRepository.findCommentsByWhisperWithAuthor(whisper).stream()
+		return feedCommentRepository.findCommentsByFeedWithAuthor(whisper).stream()
 				.map((entity)->WhisperCommentDTO.mappingDTO(entity))
 				.toList();
 	}
@@ -106,7 +106,7 @@ public class WhisperCommentService {
 		MemberEntity author = memberRepository.findById(userUuid)
 				.orElseThrow(()-> new CommonAPIException(MemberExceptionConst.NOT_FOUND));
 		
-		WhisperCommentEntity comment = whisperCommentRepository.findById(whisperCommentId)
+		FeedCommentEntity comment = feedCommentRepository.findById(whisperCommentId)
 				.orElseThrow(()-> new CommonAPIException(WhisperExceptionConst.NOT_FOUND_COMMENT));
 		
 		//덧글과 작성자가 일치 하지 않을 경우 예외 처리
@@ -114,5 +114,14 @@ public class WhisperCommentService {
 			throw new CommonAPIException(MemberExceptionConst.UNAUTHORIZED);
 		
 		comment.setDeleted(true);
+	}
+	/**
+	 * 덧글 수 조회
+	 * @param feed
+	 * @return 덧글 수
+	 */
+	@Transactional(readOnly=true)
+	public long getCommentCount(FeedBaseEntity feed) {
+		return feedCommentRepository.countByFeed(feed);
 	}
 }

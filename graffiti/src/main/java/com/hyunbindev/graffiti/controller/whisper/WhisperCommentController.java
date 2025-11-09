@@ -12,9 +12,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.hyunbindev.graffiti.data.whisper.CreateCommentDTO;
 import com.hyunbindev.graffiti.data.whisper.WhisperCommentDTO;
-import com.hyunbindev.graffiti.data.whisper.WhisperCreateCommentDTO;
-import com.hyunbindev.graffiti.service.whisper.WhisperCommentService;
+import com.hyunbindev.graffiti.service.feed.FeedCommentService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/api/v1/whisper")
 @Slf4j
 public class WhisperCommentController {
-	private final WhisperCommentService whisperCommentService;
+	private final FeedCommentService feedCommentService;
 	/**
 	 * Whisper Feed 덧글 생성
 	 * @param auth
@@ -34,8 +34,8 @@ public class WhisperCommentController {
 	 * @return status 200
 	 */
 	@PostMapping("/{feedId}/comment")
-	public ResponseEntity<Void> createWhisperComment(Authentication auth, @PathVariable("feedId")Long feedId,@RequestBody @Valid WhisperCreateCommentDTO createDto){
-		whisperCommentService.createWhisperComment(auth.getName(), feedId, createDto);
+	public ResponseEntity<Void> createWhisperComment(Authentication auth, @PathVariable("feedId")Long feedId,@RequestBody @Valid CreateCommentDTO createDto){
+		feedCommentService.createWhisperComment(auth.getName(), feedId, createDto);
 		return ResponseEntity.ok().build();
 	}
 	/**
@@ -46,7 +46,7 @@ public class WhisperCommentController {
 	 */
 	@DeleteMapping("/comment/{commentId}")
 	public ResponseEntity<Void> deleteWhisperComment(Authentication auth, @PathVariable("commentId")Long commentId){
-		whisperCommentService.deleteWhisperComment(auth.getName(), commentId);
+		feedCommentService.deleteWhisperComment(auth.getName(), commentId);
 		return ResponseEntity.ok().build();
 	}
 	/**
@@ -57,6 +57,6 @@ public class WhisperCommentController {
 	 */
 	@GetMapping("/{feeedId}/comment")
 	public ResponseEntity<List<WhisperCommentDTO>> getWhisperComment(Authentication auth, @PathVariable("feedId")Long feedId){
-		return ResponseEntity.ok(whisperCommentService.getWhisperComments(auth.getName(), feedId));
+		return ResponseEntity.ok(feedCommentService.getWhisperComments(auth.getName(), feedId));
 	}
 }

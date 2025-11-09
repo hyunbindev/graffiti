@@ -1,10 +1,11 @@
-package com.hyunbindev.graffiti.entity.jpa.post.whisper;
+package com.hyunbindev.graffiti.entity.jpa.post;
 
 import java.time.LocalDateTime;
 
 import org.hibernate.annotations.CreationTimestamp;
 
 import com.hyunbindev.graffiti.entity.jpa.member.MemberEntity;
+import com.hyunbindev.graffiti.entity.jpa.post.whisper.WhisperEntity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -20,12 +21,12 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * Whisper Comment Entity
+ * Comment Entity
  * @author hyunbinDev
  */
 @Entity
 @Builder
-public class WhisperCommentEntity {
+public class FeedCommentEntity {
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Getter
@@ -40,7 +41,7 @@ public class WhisperCommentEntity {
 	//부모 게시글
 	@NotNull
 	@ManyToOne(fetch = FetchType.LAZY)
-	private WhisperEntity whisper;
+	private FeedBaseEntity feed;
 	
 	//작성 내용
 	@Lob

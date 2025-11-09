@@ -19,7 +19,7 @@ public class FeedViewService {
 		
 		redisTemplate.opsForSet().add(key, userUuid);
 		
-		redisTemplate.expire(key, 24, TimeUnit.HOURS);
+		redisTemplate.expire(key, 25, TimeUnit.HOURS);
 		
 		return redisTemplate.opsForSet().size(key);
 	}

@@ -18,6 +18,8 @@ import com.hyunbindev.graffiti.exception.CommonAPIException;
 import com.hyunbindev.graffiti.repository.jpa.MemberRepository;
 import com.hyunbindev.graffiti.repository.jpa.group.GroupRepository;
 import com.hyunbindev.graffiti.repository.jpa.whisper.WhisperRepository;
+import com.hyunbindev.graffiti.service.feed.FeedCommentService;
+import com.hyunbindev.graffiti.service.feed.FeedLikeService;
 import com.hyunbindev.graffiti.service.feed.FeedViewService;
 
 import lombok.RequiredArgsConstructor;
@@ -32,7 +34,8 @@ public class WhisperService {
 	private final GroupRepository groupRepository;
 	
 	private final FeedViewService feedViewService;
-	
+	private final FeedLikeService feedLikeService;
+	private final FeedCommentService feedCommentService;
 	/**
 	 * Whisper Post 생성
 	 * @param userUuid
@@ -70,7 +73,12 @@ public class WhisperService {
 		}
 		whisperRepository.save(whisperEntityBuilder.build());
 	}
-	
+	/**
+	 * whisper feed 조회
+	 * @param userUuid
+	 * @param feedId
+	 * @return
+	 */
 	@Transactional(readOnly=true)
 	public WhisperDTO getWhisperFeed(String userUuid ,Long feedId) {
 		MemberEntity user = memberRepository.findById(userUuid)
@@ -79,8 +87,6 @@ public class WhisperService {
 		WhisperEntity whisper = whisperRepository.findByIdWithAuthor(feedId)
 				.orElseThrow(()->new CommonAPIException(WhisperExceptionConst.NOT_FOUND_FEED));
 		
-		//사용자 조회 계산
-		long viewCount = feedViewService.getViewCountAndSync(feedId, userUuid);
 		
 		//소속 그룹 검증
 		if(!user.isInGroup(whisper.getGroup()))
@@ -89,7 +95,14 @@ public class WhisperService {
 		if(whisper.isInvisibleMention() && whisper.getMentionMembers().contains(user))
 			throw new CommonAPIException(WhisperExceptionConst.FORBIDDEN);
 		
-		return  WhisperDTO.mappingDTO(whisper,viewCount);
+		//사용자 조회 계산
+		long viewCount = feedViewService.getViewCountAndSync(feedId, userUuid);
+		//좋아요 수 집계
+		long likeCount = feedLikeService.getFeedCount(whisper);
+		//덧글 수 집계
+		long commentCount = feedCommentService.getCommentCount(whisper);
+		
+		return  WhisperDTO.mappingDTO(whisper,viewCount,likeCount,commentCount);
 	}
 	/**
 	 * Whisper 게시글 소프트 삭제 처리

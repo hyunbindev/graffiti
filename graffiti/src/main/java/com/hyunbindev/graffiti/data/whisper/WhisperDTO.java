@@ -24,17 +24,20 @@ public class WhisperDTO {
 	@Setter
 	private Long viewCount;
 	private Long commentCount;
+	private Long likeCount;
 	/**
 	 * DTO 매핑
 	 * @param entity
 	 * @return
 	 */
-	public static WhisperDTO mappingDTO(WhisperEntity entity, long viewCount) {
+	public static WhisperDTO mappingDTO(WhisperEntity entity, long viewCount, long likeCount, long commentCount) {
 		return WhisperDTO.builder()
 				.id(entity.getId())
 				.author(new MemberInfoDTO(entity.getAuthor()))
 				.metionMembers(entity.getMentionMembers().stream().map((m)->new MemberInfoDTO(m)).toList())
 				.viewCount(viewCount)
+				.likeCount(likeCount)
+				.commentCount(commentCount)
 				.text(entity.getText())
 				.build();
 	}

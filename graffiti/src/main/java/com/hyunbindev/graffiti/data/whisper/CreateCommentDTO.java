@@ -4,7 +4,7 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 
 @Getter
-public class WhisperCreateCommentDTO {
+public class CreateCommentDTO {
 	@NotBlank(message="내용을 입력해 주세요")
 	private String text;
 }
