@@ -1,4 +1,4 @@
-package com.hyunbindev.graffiti.controller.whisper;
+package com.hyunbindev.graffiti.controller.feed;
 
 import java.util.List;
 
@@ -22,9 +22,9 @@ import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/whisper")
+@RequestMapping("/api/v1/feed")
 @Slf4j
-public class WhisperCommentController {
+public class FeedCommentController {
 	private final FeedCommentService feedCommentService;
 	/**
 	 * Whisper Feed 덧글 생성
@@ -55,7 +55,7 @@ public class WhisperCommentController {
 	 * @param feedId
 	 * @return
 	 */
-	@GetMapping("/{feeedId}/comment")
+	@GetMapping("/{feedId}/comment")
 	public ResponseEntity<List<WhisperCommentDTO>> getWhisperComment(Authentication auth, @PathVariable("feedId")Long feedId){
 		return ResponseEntity.ok(feedCommentService.getWhisperComments(auth.getName(), feedId));
 	}

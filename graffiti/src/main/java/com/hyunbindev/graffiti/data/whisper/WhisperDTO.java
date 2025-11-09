@@ -34,6 +34,7 @@ public class WhisperDTO {
 		return WhisperDTO.builder()
 				.id(entity.getId())
 				.author(new MemberInfoDTO(entity.getAuthor()))
+				.createdAt(entity.getCreatedAt())
 				.metionMembers(entity.getMentionMembers().stream().map((m)->new MemberInfoDTO(m)).toList())
 				.viewCount(viewCount)
 				.likeCount(likeCount)

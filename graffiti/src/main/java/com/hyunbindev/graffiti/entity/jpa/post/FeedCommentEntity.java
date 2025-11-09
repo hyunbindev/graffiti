@@ -5,7 +5,6 @@ import java.time.LocalDateTime;
 import org.hibernate.annotations.CreationTimestamp;
 
 import com.hyunbindev.graffiti.entity.jpa.member.MemberEntity;
-import com.hyunbindev.graffiti.entity.jpa.post.whisper.WhisperEntity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -16,8 +15,10 @@ import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
@@ -26,6 +27,8 @@ import lombok.Setter;
  */
 @Entity
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class FeedCommentEntity {
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
