@@ -18,6 +18,7 @@ import com.hyunbindev.graffiti.exception.CommonAPIException;
 import com.hyunbindev.graffiti.repository.jpa.MemberRepository;
 import com.hyunbindev.graffiti.repository.jpa.group.GroupRepository;
 import com.hyunbindev.graffiti.repository.jpa.whisper.WhisperRepository;
+import com.hyunbindev.graffiti.service.feed.FeedViewService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,6 +30,9 @@ public class WhisperService {
 	private final WhisperRepository whisperRepository;
 	private final MemberRepository memberRepository;
 	private final GroupRepository groupRepository;
+	
+	private final FeedViewService feedViewService;
+	
 	/**
 	 * Whisper Post 생성
 	 * @param userUuid
@@ -75,6 +79,9 @@ public class WhisperService {
 		WhisperEntity whisper = whisperRepository.findByIdWithAuthor(feedId)
 				.orElseThrow(()->new CommonAPIException(WhisperExceptionConst.NOT_FOUND_FEED));
 		
+		//사용자 조회 계산
+		long viewCount = feedViewService.getViewCountAndSync(feedId, userUuid);
+		
 		//소속 그룹 검증
 		if(!user.isInGroup(whisper.getGroup()))
 			throw new CommonAPIException(MemberExceptionConst.UNAUTHORIZED);
@@ -82,8 +89,7 @@ public class WhisperService {
 		if(whisper.isInvisibleMention() && whisper.getMentionMembers().contains(user))
 			throw new CommonAPIException(WhisperExceptionConst.FORBIDDEN);
 		
-		//Dto변환 리턴
-		return WhisperDTO.mappingDTO(whisper);
+		return  WhisperDTO.mappingDTO(whisper,viewCount);
 	}
 	/**
 	 * Whisper 게시글 소프트 삭제 처리
