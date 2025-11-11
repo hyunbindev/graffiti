@@ -26,6 +26,8 @@ public class WhisperDTO {
 	private Long commentCount;
 	private Long likeCount;
 	private boolean blinded;
+	private String imageUrl;
+	
 	/**
 	 * DTO 매핑
 	 * @param entity
@@ -42,6 +44,20 @@ public class WhisperDTO {
 				.likeCount(likeCount)
 				.commentCount(commentCount)
 				.text(entity.getText())
+				.build();
+	}
+	public static WhisperDTO mappingDTOWithImage(WhisperEntity entity, long viewCount, long likeCount, long commentCount ,String imageUrl) {
+		return WhisperDTO.builder()
+				.id(entity.getId())
+				.author(new MemberInfoDTO(entity.getAuthor()))
+				.createdAt(entity.getCreatedAt())
+				.metionMembers(entity.getMentionMembers().stream().map((m)->new MemberInfoDTO(m)).toList())
+				//캐싱된 조회수 및 저장된 조회수 합산
+				.viewCount(viewCount + entity.getViewCount())
+				.likeCount(likeCount)
+				.commentCount(commentCount)
+				.text(entity.getText())
+				.imageUrl(imageUrl)
 				.build();
 	}
 	public static WhisperDTO blindDTO() {

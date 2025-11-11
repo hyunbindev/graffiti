@@ -14,6 +14,7 @@ import com.hyunbindev.graffiti.entity.jpa.post.whisper.WhisperEntity;
 import com.hyunbindev.graffiti.exception.CommonAPIException;
 import com.hyunbindev.graffiti.repository.jpa.FeedBaseRepository;
 import com.hyunbindev.graffiti.repository.jpa.MemberRepository;
+import com.hyunbindev.graffiti.service.image.ImageService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 public class FeedService {
 	private final FeedBaseRepository feedBaseRepository;
 	private final MemberRepository memberRepository;
+	private final ImageService imageService;
 	/**
 	 * 최신순 전체 피드 조회
 	 * @param userUuid
@@ -56,7 +58,11 @@ public class FeedService {
 	private PostPreViewDTO mappingPreviewDto(FeedBaseEntity entity, MemberEntity userEntity) {
 		//Whisper 게시글일 경우 dto 매핑
 		if(entity instanceof WhisperEntity whisper) {
-			return WhisperPreViewDTO.mappingDTO(whisper,userEntity);
+			if(whisper.getImageName() != null) {
+				String imageUrl = imageService.getPresignedUrl(whisper.getImageName());
+				return WhisperPreViewDTO.mappingDTO(whisper,userEntity,imageUrl);
+			}
+			return WhisperPreViewDTO.mappingDTO(whisper,userEntity,null);
 		}
 		return null;
 	}

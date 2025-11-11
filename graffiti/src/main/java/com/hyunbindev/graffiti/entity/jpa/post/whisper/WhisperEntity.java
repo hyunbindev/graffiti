@@ -29,5 +29,8 @@ public class WhisperEntity extends FeedBaseEntity{
 	private List<MemberEntity> mentionMembers;
 	
 	@Getter
+	private String imageName;
+	
+	@Getter
 	private boolean invisibleMention;
 }

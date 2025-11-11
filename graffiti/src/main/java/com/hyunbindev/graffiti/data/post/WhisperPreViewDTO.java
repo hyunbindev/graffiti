@@ -16,12 +16,13 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class WhisperPreViewDTO extends PostPreViewDTO{
 	List<MemberInfoDTO> mentionMember;
+	String imageUrl;
 	/**
 	 * DTO mapper
 	 * @param entity
 	 * @return
 	 */
-	public static WhisperPreViewDTO mappingDTO(WhisperEntity entity, MemberEntity userEntity) {
+	public static WhisperPreViewDTO mappingDTO(WhisperEntity entity, MemberEntity userEntity ,String imageUrl) {
 		//PostPreViewDTO 상속 WhisperPreViewDTO builder 생성
 		WhisperPreViewDTOBuilder<?,?> whisperPreViewDTOBuilder=WhisperPreViewDTO.builder()
 				//공통 필드
@@ -45,7 +46,8 @@ public class WhisperPreViewDTO extends PostPreViewDTO{
 			.isBlinded(false)
 			//글 미리보기 50글자 제한
 			//.previewText(entity.getText().substring(Math.min(entity.getText().length(), 50)));
-			.previewText(preViewText);
+			.previewText(preViewText)
+			.imageUrl(imageUrl);
 		}
 		return whisperPreViewDTOBuilder.build();
 	}

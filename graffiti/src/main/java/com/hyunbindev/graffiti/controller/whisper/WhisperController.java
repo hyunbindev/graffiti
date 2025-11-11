@@ -7,9 +7,10 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.hyunbindev.graffiti.data.whisper.WhisperCreateDTO;
 import com.hyunbindev.graffiti.data.whisper.WhisperDTO;
@@ -32,8 +33,8 @@ public class WhisperController {
 	 * @return
 	 */
 	@PostMapping
-	public ResponseEntity<Void> createWhisperFeed(Authentication auth, @RequestBody @Valid WhisperCreateDTO createDto){
-		whisperService.createWhisperFeed(auth.getName(), createDto);
+	public ResponseEntity<Void> createWhisperFeed(Authentication auth, @RequestPart("feed") @Valid WhisperCreateDTO createDto,@RequestPart(value="image", required=false)MultipartFile image){
+		whisperService.createWhisperFeed(auth.getName(), createDto, image);
 		return ResponseEntity.status(HttpStatus.CREATED).build();
 	}
 	/**

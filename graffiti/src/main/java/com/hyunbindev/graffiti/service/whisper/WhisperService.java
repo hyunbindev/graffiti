@@ -5,9 +5,11 @@ import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.hyunbindev.graffiti.constant.exception.MemberExceptionConst;
 import com.hyunbindev.graffiti.constant.exception.WhisperExceptionConst;
+import com.hyunbindev.graffiti.constant.feed.FeedType;
 import com.hyunbindev.graffiti.data.whisper.WhisperCreateDTO;
 import com.hyunbindev.graffiti.data.whisper.WhisperDTO;
 import com.hyunbindev.graffiti.entity.jpa.group.GroupEntity;
@@ -21,6 +23,7 @@ import com.hyunbindev.graffiti.repository.jpa.whisper.WhisperRepository;
 import com.hyunbindev.graffiti.service.feed.FeedCommentService;
 import com.hyunbindev.graffiti.service.feed.FeedLikeService;
 import com.hyunbindev.graffiti.service.feed.FeedViewService;
+import com.hyunbindev.graffiti.service.image.ImageService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,13 +39,15 @@ public class WhisperService {
 	private final FeedViewService feedViewService;
 	private final FeedLikeService feedLikeService;
 	private final FeedCommentService feedCommentService;
+	
+	private final ImageService imageService;
 	/**
 	 * Whisper Post 생성
 	 * @param userUuid
 	 * @param createDto
 	 */
 	@Transactional
-	public void createWhisperFeed(String userUuid ,WhisperCreateDTO createDto) {
+	public void createWhisperFeed(String userUuid ,WhisperCreateDTO createDto,MultipartFile image) {
 		MemberEntity author = memberRepository.findById(userUuid)
 				.orElseThrow(()-> new CommonAPIException(MemberExceptionConst.UNAUTHORIZED));
 		
@@ -74,6 +79,12 @@ public class WhisperService {
 		if(createDto.isInvisibleMention()) {
 			whisperEntityBuilder.invisibleMention(true);
 		}
+		//이미지 저장
+		if(image != null) {
+			String imageName = imageService.saveImage(FeedType.WHISPER, image);
+			whisperEntityBuilder.imageName(imageName);
+		}
+		
 		whisperRepository.save(whisperEntityBuilder.build());
 	}
 	/**
@@ -107,6 +118,13 @@ public class WhisperService {
 		long likeCount = feedLikeService.getFeedCount(whisper);
 		//덧글 수 집계
 		long commentCount = feedCommentService.getCommentCount(whisper);
+		
+		//이미지 존재시
+		if(whisper.getImageName() != null) {
+			String imageUrl = imageService.getPresignedUrl(whisper.getImageName());
+			log.debug(imageUrl);
+			return WhisperDTO.mappingDTOWithImage(whisper,viewCount,likeCount,commentCount,imageUrl);
+		}
 		
 		return  WhisperDTO.mappingDTO(whisper,viewCount,likeCount,commentCount);
 	}
