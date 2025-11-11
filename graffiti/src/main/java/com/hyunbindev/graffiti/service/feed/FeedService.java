@@ -12,6 +12,7 @@ import com.hyunbindev.graffiti.entity.jpa.member.MemberEntity;
 import com.hyunbindev.graffiti.entity.jpa.post.FeedBaseEntity;
 import com.hyunbindev.graffiti.entity.jpa.post.whisper.WhisperEntity;
 import com.hyunbindev.graffiti.exception.CommonAPIException;
+import com.hyunbindev.graffiti.repository.jpa.FeedBaseCustomRepsotory;
 import com.hyunbindev.graffiti.repository.jpa.FeedBaseRepository;
 import com.hyunbindev.graffiti.repository.jpa.MemberRepository;
 import com.hyunbindev.graffiti.service.image.ImageService;
@@ -23,9 +24,9 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Slf4j
 public class FeedService {
-	private final FeedBaseRepository feedBaseRepository;
 	private final MemberRepository memberRepository;
 	private final ImageService imageService;
+	private final FeedBaseCustomRepsotory feedBaseCustomRepsotory;
 	/**
 	 * 최신순 전체 피드 조회
 	 * @param userUuid
@@ -34,7 +35,7 @@ public class FeedService {
 	 * @return
 	 */
 	@Transactional(readOnly=true)
-	public List<PostPreViewDTO> getRecentPostPreviewWithPage(String userUuid, int page, int size) {
+	public List<PostPreViewDTO> getRecentPostPreviewWithPage(String userUuid, Long lastId, int size) {
 		MemberEntity userEntity = memberRepository.findById(userUuid)
 				.orElseThrow(()-> new CommonAPIException(MemberExceptionConst.UNAUTHORIZED));
 		
@@ -44,8 +45,8 @@ public class FeedService {
 				.map((link)->link.getGroup().getId())
 				.toList();
 		
-		List<FeedBaseEntity> postBaseEntitys = feedBaseRepository.findByGroupInAndDeletedFalse(groupIds, size, page*size);
-		
+		//List<FeedBaseEntity> postBaseEntitys = feedBaseRepository.findByGroupInAndDeletedFalse(groupIds, size, lastId);
+		List<FeedBaseEntity> postBaseEntitys = feedBaseCustomRepsotory.findRecentFeed(groupIds, size, lastId);
 		return postBaseEntitys.stream().map((feed)->mappingPreviewDto(feed,userEntity)).toList();
 	}
 	/**

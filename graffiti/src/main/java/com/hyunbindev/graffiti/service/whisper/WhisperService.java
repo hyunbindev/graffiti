@@ -1,10 +1,15 @@
 package com.hyunbindev.graffiti.service.whisper;
 
 import java.util.List;
+import java.util.UUID;
 
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.event.TransactionPhase;
+import org.springframework.transaction.event.TransactionalEventListener;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.hyunbindev.graffiti.constant.exception.MemberExceptionConst;
@@ -25,6 +30,8 @@ import com.hyunbindev.graffiti.service.feed.FeedLikeService;
 import com.hyunbindev.graffiti.service.feed.FeedViewService;
 import com.hyunbindev.graffiti.service.image.ImageService;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -41,6 +48,8 @@ public class WhisperService {
 	private final FeedCommentService feedCommentService;
 	
 	private final ImageService imageService;
+	
+	private final ApplicationEventPublisher eventPublisher;
 	/**
 	 * Whisper Post 생성
 	 * @param userUuid
@@ -58,11 +67,20 @@ public class WhisperService {
 		if(!author.isInGroup(group))
 			throw new CommonAPIException(MemberExceptionConst.UNAUTHORIZED);
 		
+		
+	
 		WhisperEntityBuilder<?,?> whisperEntityBuilder = WhisperEntity.builder()
 				.author(author)
 				.group(group)
 				.text(createDto.getText())
 				.deleted(false);
+		//이미지 저장
+		if(image != null) {
+			String imageName = FeedType.WHISPER.getFeedType()+"-"+UUID.randomUUID();
+			whisperEntityBuilder.imageName(imageName);
+			//commit 시 이미지 저장 이벤트 발행
+			eventPublisher.publishEvent(new WhisperFeedCommitEvent(imageName, image));
+		}
 		
 		//사용자 언급 데이터 포함시
 		if(!createDto.getMentionMembers().isEmpty()) {
@@ -79,14 +97,21 @@ public class WhisperService {
 		if(createDto.isInvisibleMention()) {
 			whisperEntityBuilder.invisibleMention(true);
 		}
-		//이미지 저장
-		if(image != null) {
-			String imageName = imageService.saveImage(FeedType.WHISPER, image);
-			whisperEntityBuilder.imageName(imageName);
-		}
 		
 		whisperRepository.save(whisperEntityBuilder.build());
 	}
+	
+	/**
+	 * 게시글 커밋 성공시 이미지 저장
+	 * 새로운 쓰레드에 작업을 위임하기 위에 Aysnc 사용
+	 * @param event
+	 */
+	@Async
+	@TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+	protected void saveImage(WhisperFeedCommitEvent event) {
+		imageService.saveImage(event.getImageId(), event.getImage());
+	}
+	
 	/**
 	 * whisper feed 조회
 	 * @param userUuid
@@ -148,5 +173,12 @@ public class WhisperService {
 		
 		//삭제 처리
 		feed.setDeleted(true);
+	}
+	
+	@AllArgsConstructor
+	@Getter
+	private class WhisperFeedCommitEvent{
+		private String imageId;
+		MultipartFile image;
 	}
 }

@@ -2,13 +2,14 @@ package com.hyunbindev.graffiti.entity.jpa.post.whisper;
 
 import java.util.List;
 
+import org.hibernate.annotations.BatchSize;
+
 import com.hyunbindev.graffiti.entity.jpa.member.MemberEntity;
 import com.hyunbindev.graffiti.entity.jpa.post.FeedBaseEntity;
 
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
-import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToMany;
 import lombok.Getter;
@@ -26,6 +27,7 @@ public class WhisperEntity extends FeedBaseEntity{
 	
 	@Getter
 	@ManyToMany(fetch = FetchType.LAZY)
+	@BatchSize(size = 20)
 	private List<MemberEntity> mentionMembers;
 	
 	@Getter

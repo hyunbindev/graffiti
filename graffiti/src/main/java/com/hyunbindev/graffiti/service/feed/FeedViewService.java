@@ -3,6 +3,7 @@ package com.hyunbindev.graffiti.service.feed;
 import java.util.concurrent.TimeUnit;
 
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
@@ -17,10 +18,14 @@ public class FeedViewService {
 	public long getViewCountAndSync(Long feedId, String userUuid) {
 		String key = "feedView:"+ feedId;
 		
-		redisTemplate.opsForSet().add(key, userUuid);
-		
-		redisTemplate.expire(key, 25, TimeUnit.HOURS);
+		addViewInfo(key, userUuid);
 		
 		return redisTemplate.opsForSet().size(key);
+	}
+	
+	@Async
+	public void addViewInfo(String key, String userUuid) {
+		redisTemplate.opsForSet().add(key, userUuid);
+		redisTemplate.expire(key, 25, TimeUnit.HOURS);
 	}
 }

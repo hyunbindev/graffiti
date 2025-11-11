@@ -1,0 +1,86 @@
+package com.hyunbindev.graffiti.service.image;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.util.Map;
+
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+
+import com.hyunbindev.graffiti.config.MinioConfig;
+import com.hyunbindev.graffiti.exception.CommonAPIException;
+import com.sksamuel.scrimage.ImmutableImage;
+import com.sksamuel.scrimage.webp.WebpWriter;
+
+import io.minio.GetObjectArgs;
+import io.minio.MinioClient;
+import io.minio.PutObjectArgs;
+import io.minio.errors.ErrorResponseException;
+import io.minio.errors.InsufficientDataException;
+import io.minio.errors.InternalException;
+import io.minio.errors.InvalidResponseException;
+import io.minio.errors.ServerException;
+import io.minio.errors.XmlParserException;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+@Service
+@RequiredArgsConstructor
+@Slf4j
+public class WebpConvertConsumer {
+	private final MinioClient minioClient;
+	
+	
+	@RabbitListener(queues = "WEBP_CONVERT")
+	public void convertRequestConsume(Map<String,String> message) {
+		long startTime = System.currentTimeMillis();
+		
+		String imageName = message.get("imageName");
+		
+		try (InputStream inputStream = minioClient.getObject(
+                GetObjectArgs.builder()
+                .bucket(MinioConfig.BUCKET_NAME)
+                .object(imageName)
+                .build()
+			)){
+	        log.debug("Processing image: {}", imageName);
+
+	        byte[] webpBytes = convertWebp(inputStream);
+
+	        minioClient.putObject(
+	                PutObjectArgs.builder()
+	                        .bucket(MinioConfig.BUCKET_NAME)
+	                        .object(imageName)
+	                        .stream(new ByteArrayInputStream(webpBytes), webpBytes.length, -1)
+	                        .contentType("image/webp")
+	                        .build()
+	        );
+	        log.info("success converted image : {} | processed time : {}ms", imageName, (System.currentTimeMillis() - startTime));
+	    } catch (Exception e) {
+	        log.error("failed to convert image {} : {}", imageName, e.getMessage(), e);
+	    }
+	}
+	
+	/**
+	 * webp 변환
+	 * @param image
+	 * @return webp byte arr
+	 */
+	private byte[] convertWebp(InputStream  inputStream) {
+	    try {
+	        // MultipartFile → ImmutableImage
+	        ImmutableImage img = ImmutableImage.loader().fromStream(inputStream);
+
+	        WebpWriter webpWriter = WebpWriter.DEFAULT.withQ(80).withM(4).withZ(9);
+	        // WebP 변환
+	        return img.bytes(webpWriter);
+	    } catch (IOException e) {
+	        log.error("이미지 WebP 변환 실패: {}", e.getMessage());
+	        throw new CommonAPIException("이미지 변환 실패", HttpStatus.BAD_REQUEST);
+	    }
+	}
+}
