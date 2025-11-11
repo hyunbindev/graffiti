@@ -25,6 +25,15 @@ repositories {
 }
 
 dependencies {
+	//minio
+	implementation 'io.minio:minio:8.5.9'
+
+	//Query DSL
+	implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
+	annotationProcessor 'com.querydsl:querydsl-apt:5.0.0:jakarta'
+	
+	annotationProcessor 'jakarta.persistence:jakarta.persistence-api'
+	
 	//metrics monitor
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
 	implementation 'io.micrometer:micrometer-registry-prometheus'
@@ -51,7 +60,11 @@ dependencies {
 	//devtools
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	runtimeOnly 'com.mysql:mysql-connector-j'
+	
+	
+	annotationProcessor 'jakarta.annotation:jakarta.annotation-api'
 	annotationProcessor 'org.projectlombok:lombok'
+	testImplementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'

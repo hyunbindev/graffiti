@@ -8,8 +8,9 @@ import com.hyunbindev.graffiti.entity.jpa.post.FeedBaseEntity;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Lob;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.ManyToMany;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
@@ -24,7 +25,7 @@ public class WhisperEntity extends FeedBaseEntity{
 	private String text;
 	
 	@Getter
-	@OneToMany(fetch = FetchType.LAZY)
+	@ManyToMany(fetch = FetchType.LAZY)
 	private List<MemberEntity> mentionMembers;
 	
 	@Getter

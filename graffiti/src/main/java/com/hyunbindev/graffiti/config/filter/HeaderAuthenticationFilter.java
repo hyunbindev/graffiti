@@ -22,13 +22,17 @@ import lombok.extern.slf4j.Slf4j;
 public class HeaderAuthenticationFilter extends OncePerRequestFilter{
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-		//사용자 식별 uuid 파싱
 		
+		//metrics 수집 url filter 예외
+		if(request.getRequestURI().startsWith("/actuator/prometheus")) {
+			filterChain.doFilter(request, response);
+			return;
+		}
+		//사용자 식별 uuid 파싱
 		String userUuid = request.getHeader("X-User-UUID");
 		String userNickName = request.getHeader("X-User-NickName");
 		
-		log.info("request : {} : {}",userUuid, userNickName);
-
+		log.info("{} : {} : {}",request.getRequestURI(),userUuid, userNickName);
 		
 		if (userUuid != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 			//user principal

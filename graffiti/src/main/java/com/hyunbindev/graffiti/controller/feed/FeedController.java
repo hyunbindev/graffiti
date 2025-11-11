@@ -19,9 +19,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class FeedController {
 	private final FeedService feedService;
-	
 	@GetMapping
-	public ResponseEntity<List<PostPreViewDTO>> getRecentPreviewPage(Authentication auth,@RequestParam(name="page") int page, @RequestParam(name="offset") int offset){
-		return ResponseEntity.ok(feedService.getRecentPostPreviewWithPage(auth.getName(), page, offset));
+	public ResponseEntity<List<PostPreViewDTO>> getRecentPreviewPage(Authentication auth,@RequestParam(name="page") int page, @RequestParam(name="size") int size){
+		return ResponseEntity.ok(feedService.getRecentPostPreviewWithPage(auth.getName(), page, size));
 	}
 }

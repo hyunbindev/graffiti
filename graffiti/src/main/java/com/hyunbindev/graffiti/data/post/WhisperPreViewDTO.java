@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.hyunbindev.graffiti.constant.feed.FeedType;
 import com.hyunbindev.graffiti.data.member.MemberInfoDTO;
+import com.hyunbindev.graffiti.entity.jpa.member.MemberEntity;
 import com.hyunbindev.graffiti.entity.jpa.post.whisper.WhisperEntity;
 
 import lombok.Getter;
@@ -20,7 +21,7 @@ public class WhisperPreViewDTO extends PostPreViewDTO{
 	 * @param entity
 	 * @return
 	 */
-	public static WhisperPreViewDTO mappingDTO(WhisperEntity entity) {
+	public static WhisperPreViewDTO mappingDTO(WhisperEntity entity, MemberEntity userEntity) {
 		//PostPreViewDTO 상속 WhisperPreViewDTO builder 생성
 		WhisperPreViewDTOBuilder<?,?> whisperPreViewDTOBuilder=WhisperPreViewDTO.builder()
 				//공통 필드
@@ -30,7 +31,7 @@ public class WhisperPreViewDTO extends PostPreViewDTO{
 				//생성 날자
 				.createdAt(entity.getCreatedAt());
 		//언급 대상 비공개시
-		if(entity.isInvisibleMention() && entity.getMentionMembers().contains(entity)) {
+		if(entity.isInvisibleMention() && entity.getMentionMembers().contains(userEntity)) {
 			whisperPreViewDTOBuilder.isBlinded(true)
 			.previewText("비공개 게시글 입니다.");
 		}else {

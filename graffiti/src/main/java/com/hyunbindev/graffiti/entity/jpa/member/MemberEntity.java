@@ -3,6 +3,7 @@ package com.hyunbindev.graffiti.entity.jpa.member;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.hyunbindev.graffiti.config.oauth.KakaoOauth2User;
 import com.hyunbindev.graffiti.entity.jpa.group.GroupEntity;
 import com.hyunbindev.graffiti.entity.jpa.group.MemberGroupLinkedEntity;

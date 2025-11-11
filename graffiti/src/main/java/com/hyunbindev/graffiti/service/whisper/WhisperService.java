@@ -71,6 +71,9 @@ public class WhisperService {
 			}
 			whisperEntityBuilder.mentionMembers(mentions);
 		}
+		if(createDto.isInvisibleMention()) {
+			whisperEntityBuilder.invisibleMention(true);
+		}
 		whisperRepository.save(whisperEntityBuilder.build());
 	}
 	/**
@@ -91,6 +94,9 @@ public class WhisperService {
 		//소속 그룹 검증
 		if(!user.isInGroup(whisper.getGroup()))
 			throw new CommonAPIException(MemberExceptionConst.UNAUTHORIZED);
+		
+		log.debug("invidasdfadsf {}",whisper.isInvisibleMention());
+		
 		//언급 검증
 		if(whisper.isInvisibleMention() && whisper.getMentionMembers().contains(user))
 			throw new CommonAPIException(WhisperExceptionConst.FORBIDDEN);
