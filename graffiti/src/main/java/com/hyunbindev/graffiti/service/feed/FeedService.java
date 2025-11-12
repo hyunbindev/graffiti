@@ -7,13 +7,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.hyunbindev.graffiti.constant.exception.MemberExceptionConst;
 import com.hyunbindev.graffiti.data.post.PostPreViewDTO;
+import com.hyunbindev.graffiti.data.post.SecretPreViewDTO;
 import com.hyunbindev.graffiti.data.post.WhisperPreViewDTO;
 import com.hyunbindev.graffiti.entity.jpa.member.MemberEntity;
 import com.hyunbindev.graffiti.entity.jpa.post.FeedBaseEntity;
+import com.hyunbindev.graffiti.entity.jpa.post.secret.SecretEntity;
 import com.hyunbindev.graffiti.entity.jpa.post.whisper.WhisperEntity;
 import com.hyunbindev.graffiti.exception.CommonAPIException;
 import com.hyunbindev.graffiti.repository.jpa.FeedBaseCustomRepsotory;
-import com.hyunbindev.graffiti.repository.jpa.FeedBaseRepository;
 import com.hyunbindev.graffiti.repository.jpa.MemberRepository;
 import com.hyunbindev.graffiti.service.image.ImageService;
 
@@ -63,6 +64,9 @@ public class FeedService {
 				return WhisperPreViewDTO.mappingDTO(whisper,userEntity,imageUrl);
 			}
 			return WhisperPreViewDTO.mappingDTO(whisper,userEntity,null);
+		}
+		if(entity instanceof SecretEntity secret) {
+			return SecretPreViewDTO.mappingDTO(secret);
 		}
 		return null;
 	}

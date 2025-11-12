@@ -30,7 +30,7 @@ import lombok.experimental.SuperBuilder;
 @Inheritance(strategy = InheritanceType.JOINED)
 @DiscriminatorColumn(name="type")
 @NoArgsConstructor
-public class FeedBaseEntity {
+public class  FeedBaseEntity{
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Getter
