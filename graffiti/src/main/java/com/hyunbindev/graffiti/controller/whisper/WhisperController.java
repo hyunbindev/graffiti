@@ -1,5 +1,7 @@
 package com.hyunbindev.graffiti.controller.whisper;
 
+import java.util.UUID;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -12,8 +14,10 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.hyunbindev.graffiti.constant.feed.FeedType;
 import com.hyunbindev.graffiti.data.whisper.WhisperCreateDTO;
 import com.hyunbindev.graffiti.data.whisper.WhisperDTO;
+import com.hyunbindev.graffiti.service.image.ImageService;
 import com.hyunbindev.graffiti.service.whisper.WhisperService;
 
 import jakarta.validation.Valid;
@@ -26,6 +30,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class WhisperController {
 	private final WhisperService whisperService;
+	private final ImageService imageService;
 	/**
 	 * whisper feed 생성
 	 * @param auth
@@ -34,7 +39,12 @@ public class WhisperController {
 	 */
 	@PostMapping
 	public ResponseEntity<Void> createWhisperFeed(Authentication auth, @RequestPart("feed") @Valid WhisperCreateDTO createDto,@RequestPart(value="image", required=false)MultipartFile image){
-		whisperService.createWhisperFeed(auth.getName(), createDto, image);
+		if(image!= null && 10 < image.getSize()) {
+			String imageName = imageService.saveImage(FeedType.WHISPER.getFeedType()+"-"+UUID.randomUUID().toString(),image);
+			whisperService.createWhisperFeedWithImage(auth.getName(), createDto, imageName);
+		}else {
+			whisperService.createWhisperFeed(auth.getName(), createDto);
+		}
 		return ResponseEntity.status(HttpStatus.CREATED).build();
 	}
 	/**

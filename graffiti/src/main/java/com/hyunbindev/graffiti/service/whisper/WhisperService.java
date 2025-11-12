@@ -56,7 +56,7 @@ public class WhisperService {
 	 * @param createDto
 	 */
 	@Transactional
-	public void createWhisperFeed(String userUuid ,WhisperCreateDTO createDto,MultipartFile image) {
+	public void createWhisperFeed(String userUuid ,WhisperCreateDTO createDto) {
 		MemberEntity author = memberRepository.findById(userUuid)
 				.orElseThrow(()-> new CommonAPIException(MemberExceptionConst.UNAUTHORIZED));
 		
@@ -74,13 +74,6 @@ public class WhisperService {
 				.group(group)
 				.text(createDto.getText())
 				.deleted(false);
-		//이미지 저장
-		if(image != null) {
-			String imageName = FeedType.WHISPER.getFeedType()+"-"+UUID.randomUUID();
-			whisperEntityBuilder.imageName(imageName);
-			//commit 시 이미지 저장 이벤트 발행
-			eventPublisher.publishEvent(new WhisperFeedCommitEvent(imageName, image));
-		}
 		
 		//사용자 언급 데이터 포함시
 		if(!createDto.getMentionMembers().isEmpty()) {
@@ -97,19 +90,61 @@ public class WhisperService {
 		if(createDto.isInvisibleMention()) {
 			whisperEntityBuilder.invisibleMention(true);
 		}
+		whisperRepository.save(whisperEntityBuilder.build());
+	}
+	/**
+	 * 이미지와 함께 저장
+	 * @param userUuid
+	 * @param createDto
+	 * @param imageName
+	 */
+	@Transactional
+	public void createWhisperFeedWithImage(String userUuid ,WhisperCreateDTO createDto, String imageName) {
+		MemberEntity author = memberRepository.findById(userUuid)
+				.orElseThrow(()-> new CommonAPIException(MemberExceptionConst.UNAUTHORIZED));
+		
+		GroupEntity group = groupRepository.findById(createDto.getGroupUuid())
+				.orElseThrow(()-> new CommonAPIException("그룹을 찾을 수 없습니다.",HttpStatus.NOT_FOUND));
+		
+		//그룹에 속하지 않을 시에 예외 처리
+		if(!author.isInGroup(group))
+			throw new CommonAPIException(MemberExceptionConst.UNAUTHORIZED);
+	
+		WhisperEntityBuilder<?,?> whisperEntityBuilder = WhisperEntity.builder()
+				.author(author)
+				.group(group)
+				.text(createDto.getText())
+				.deleted(false)
+				.imageName(imageName);
+		
+		//사용자 언급 데이터 포함시
+		if(!createDto.getMentionMembers().isEmpty()) {
+			List<MemberEntity> mentions = memberRepository.findAllById(createDto.getMentionMembers());
+			//언급 사용자 존재시
+			for(MemberEntity mention : mentions) {
+				boolean belongs = mention.getGroupLinks().stream()
+						.anyMatch(link-> link.getGroup().getId().equals(group.getId()));
+				//언급사용자가 해당 그룹에 참여하고 있지 않을경우 예외 처리
+				if(!belongs) throw new CommonAPIException(MemberExceptionConst.UNAUTHORIZED);
+			}
+			whisperEntityBuilder.mentionMembers(mentions);
+		}
+		if(createDto.isInvisibleMention()) {
+			whisperEntityBuilder.invisibleMention(true);
+		}
+		//커밋 실패시 이미지 삭제메세지 발행
+		eventPublisher.publishEvent(new WhisperFeedRollBackEvent(imageName));
+		
 		
 		whisperRepository.save(whisperEntityBuilder.build());
 	}
-	
 	/**
-	 * 게시글 커밋 성공시 이미지 저장
-	 * 새로운 쓰레드에 작업을 위임하기 위에 Aysnc 사용
+	 * 게시글 Transaction 실패시 이미지 삭제
 	 * @param event
 	 */
-	@Async
-	@TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-	protected void saveImage(WhisperFeedCommitEvent event) {
-		imageService.saveImage(event.getImageId(), event.getImage());
+	@TransactionalEventListener(phase = TransactionPhase.AFTER_ROLLBACK)
+	protected void saveImage(WhisperFeedRollBackEvent event) {
+		imageService.deleteImage(event.getImageName());
 	}
 	
 	/**
@@ -131,7 +166,6 @@ public class WhisperService {
 		if(!user.isInGroup(whisper.getGroup()))
 			throw new CommonAPIException(MemberExceptionConst.UNAUTHORIZED);
 		
-		log.debug("invidasdfadsf {}",whisper.isInvisibleMention());
 		
 		//언급 검증
 		if(whisper.isInvisibleMention() && whisper.getMentionMembers().contains(user))
@@ -147,7 +181,6 @@ public class WhisperService {
 		//이미지 존재시
 		if(whisper.getImageName() != null) {
 			String imageUrl = imageService.getPresignedUrl(whisper.getImageName());
-			log.debug(imageUrl);
 			return WhisperDTO.mappingDTOWithImage(whisper,viewCount,likeCount,commentCount,imageUrl);
 		}
 		
@@ -177,8 +210,7 @@ public class WhisperService {
 	
 	@AllArgsConstructor
 	@Getter
-	private class WhisperFeedCommitEvent{
-		private String imageId;
-		MultipartFile image;
+	private class WhisperFeedRollBackEvent{
+		private String imageName;
 	}
 }

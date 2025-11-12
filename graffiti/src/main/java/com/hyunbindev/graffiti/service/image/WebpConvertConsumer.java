@@ -3,8 +3,6 @@ package com.hyunbindev.graffiti.service.image;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 import java.util.Map;
 
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
@@ -16,15 +14,12 @@ import com.hyunbindev.graffiti.exception.CommonAPIException;
 import com.sksamuel.scrimage.ImmutableImage;
 import com.sksamuel.scrimage.webp.WebpWriter;
 
+import io.minio.CopyObjectArgs;
+import io.minio.CopySource;
 import io.minio.GetObjectArgs;
 import io.minio.MinioClient;
 import io.minio.PutObjectArgs;
-import io.minio.errors.ErrorResponseException;
-import io.minio.errors.InsufficientDataException;
-import io.minio.errors.InternalException;
-import io.minio.errors.InvalidResponseException;
-import io.minio.errors.ServerException;
-import io.minio.errors.XmlParserException;
+import io.minio.RemoveObjectArgs;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -37,27 +32,47 @@ public class WebpConvertConsumer {
 	
 	@RabbitListener(queues = "WEBP_CONVERT")
 	public void convertRequestConsume(Map<String,String> message) {
-		long startTime = System.currentTimeMillis();
-		
-		String imageName = message.get("imageName");
-		
-		try (InputStream inputStream = minioClient.getObject(
-                GetObjectArgs.builder()
-                .bucket(MinioConfig.BUCKET_NAME)
-                .object(imageName)
-                .build()
-			)){
+	    long startTime = System.currentTimeMillis();
+	    String imageName = message.get("imageName");
+	    
+	    String tempImageName = imageName + ".tmp_webp"; 
+	    
+	    try (InputStream inputStream = minioClient.getObject(
+	            GetObjectArgs.builder()
+	            .bucket(MinioConfig.BUCKET_NAME)
+	            .object(imageName)
+	            .build()
+	    )){
 	        log.debug("Processing image: {}", imageName);
-
 	        byte[] webpBytes = convertWebp(inputStream);
 
+	        // 1. 임시 이름으로 WebP 파일 업로드
 	        minioClient.putObject(
 	                PutObjectArgs.builder()
 	                        .bucket(MinioConfig.BUCKET_NAME)
-	                        .object(imageName)
+	                        .object(tempImageName) // 임시 이름 사용
 	                        .stream(new ByteArrayInputStream(webpBytes), webpBytes.length, -1)
 	                        .contentType("image/webp")
 	                        .build()
+	        );
+	        minioClient.copyObject(
+	            CopyObjectArgs.builder()
+	                .bucket(MinioConfig.BUCKET_NAME)
+	                .object(imageName)//덮어쓸 최종 이름 (원본 이름)
+	                .source(
+	                    CopySource.builder()
+	                        .bucket(MinioConfig.BUCKET_NAME)
+	                        .object(tempImageName)//임시 파일
+	                        .build()
+	                )
+	                .build()
+	        );
+	        //임시파일 삭제
+	        minioClient.removeObject(
+	            RemoveObjectArgs.builder()
+	                .bucket(MinioConfig.BUCKET_NAME)
+	                .object(tempImageName)
+	                .build()
 	        );
 	        log.info("success converted image : {} | processed time : {}ms", imageName, (System.currentTimeMillis() - startTime));
 	    } catch (Exception e) {

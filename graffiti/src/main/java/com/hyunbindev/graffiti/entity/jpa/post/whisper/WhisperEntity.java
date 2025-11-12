@@ -27,7 +27,6 @@ public class WhisperEntity extends FeedBaseEntity{
 	
 	@Getter
 	@ManyToMany(fetch = FetchType.LAZY)
-	@BatchSize(size = 20)
 	private List<MemberEntity> mentionMembers;
 	
 	@Getter

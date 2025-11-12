@@ -45,7 +45,6 @@ public class FeedService {
 				.map((link)->link.getGroup().getId())
 				.toList();
 		
-		//List<FeedBaseEntity> postBaseEntitys = feedBaseRepository.findByGroupInAndDeletedFalse(groupIds, size, lastId);
 		List<FeedBaseEntity> postBaseEntitys = feedBaseCustomRepsotory.findRecentFeed(groupIds, size, lastId);
 		return postBaseEntitys.stream().map((feed)->mappingPreviewDto(feed,userEntity)).toList();
 	}

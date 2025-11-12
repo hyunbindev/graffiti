@@ -61,4 +61,8 @@ public class FeedBaseEntity {
 	@Getter
 	@Setter
 	private boolean deleted;
+	
+	public void increViewCount(long viewCount) {
+		this.viewCount+=viewCount;
+	}
 }
