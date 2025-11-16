@@ -16,5 +16,8 @@ public abstract class PostPreViewDTO {
 	private MemberInfoDTO authorInfo;
 	private LocalDateTime createdAt;
 	private String previewText;
+	private Long viewCount;
+	private Long commentCount;
+	private Long likeCount;
 	private boolean isBlinded;
 }

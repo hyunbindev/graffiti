@@ -128,6 +128,11 @@ public class SecretService {
 		
 	}
 	
+	/**
+	 * 비밀글 무작위 치환
+	 * @param text
+	 * @return
+	 */
 	public static String randomText(String text) {
 		StringBuilder textBuilder = new StringBuilder();
 		if(text.length() ==0) return "empty";

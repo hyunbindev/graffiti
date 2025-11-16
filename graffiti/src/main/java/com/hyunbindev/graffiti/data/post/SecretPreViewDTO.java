@@ -22,6 +22,8 @@ public class SecretPreViewDTO extends PostPreViewDTO{
 				.type(FeedType.SECRET)
 				.createdAt(entity.getCreatedAt())
 				.previewText(preViewText)
+				.commentCount(entity.getCommentCount())
+				.likeCount(entity.getLikeCount())
 				.build();
 	}
 }

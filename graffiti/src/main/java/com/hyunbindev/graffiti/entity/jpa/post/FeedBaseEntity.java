@@ -13,9 +13,11 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,6 +28,7 @@ import lombok.experimental.SuperBuilder;
  * @author hyunbinDev
  */
 @Entity
+@Table(indexes = {@Index(name = "idx_feed_sort_optimized", columnList = "group_id, deleted, id DESC") })
 @SuperBuilder
 @Inheritance(strategy = InheritanceType.JOINED)
 @DiscriminatorColumn(name="type")
@@ -56,6 +59,12 @@ public class  FeedBaseEntity{
 	@Getter
 	@Setter
 	long viewCount;
+	
+	@Getter
+	long commentCount;
+	
+	@Getter
+	long likeCount;
 	
 	//Soft delete 필드
 	@Getter

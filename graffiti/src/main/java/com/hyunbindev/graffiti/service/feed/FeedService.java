@@ -9,13 +9,15 @@ import com.hyunbindev.graffiti.constant.exception.MemberExceptionConst;
 import com.hyunbindev.graffiti.data.post.PostPreViewDTO;
 import com.hyunbindev.graffiti.data.post.SecretPreViewDTO;
 import com.hyunbindev.graffiti.data.post.WhisperPreViewDTO;
+import com.hyunbindev.graffiti.entity.jpa.group.GroupEntity;
 import com.hyunbindev.graffiti.entity.jpa.member.MemberEntity;
 import com.hyunbindev.graffiti.entity.jpa.post.FeedBaseEntity;
 import com.hyunbindev.graffiti.entity.jpa.post.secret.SecretEntity;
 import com.hyunbindev.graffiti.entity.jpa.post.whisper.WhisperEntity;
 import com.hyunbindev.graffiti.exception.CommonAPIException;
-import com.hyunbindev.graffiti.repository.jpa.FeedBaseCustomRepsotory;
+import com.hyunbindev.graffiti.repository.jpa.FeedBaseRepository;
 import com.hyunbindev.graffiti.repository.jpa.MemberRepository;
+import com.hyunbindev.graffiti.repository.jpa.group.GroupRepository;
 import com.hyunbindev.graffiti.service.image.ImageService;
 
 import lombok.RequiredArgsConstructor;
@@ -27,7 +29,9 @@ import lombok.extern.slf4j.Slf4j;
 public class FeedService {
 	private final MemberRepository memberRepository;
 	private final ImageService imageService;
-	private final FeedBaseCustomRepsotory feedBaseCustomRepsotory;
+	private final FeedBaseRepository feedBaseRepository;
+	private final GroupRepository groupRepository;
+	//private final FeedBaseCustomRepsotory feedBaseCustomRepsotory;
 	/**
 	 * 최신순 전체 피드 조회
 	 * @param userUuid
@@ -46,7 +50,38 @@ public class FeedService {
 				.map((link)->link.getGroup().getId())
 				.toList();
 		
-		List<FeedBaseEntity> postBaseEntitys = feedBaseCustomRepsotory.findRecentFeed(groupIds, size, lastId);
+		if(lastId==null)
+			lastId = Long.MAX_VALUE;
+		
+		List<FeedBaseEntity> postBaseEntitys = feedBaseRepository.findByDeletedIsFalseAndGroupIdInOrderByIdDesc(groupIds, size, lastId); 
+		
+		for(FeedBaseEntity e : postBaseEntitys) {
+			log.debug("id : {}", e.getId());
+		}
+		
+		
+		return postBaseEntitys.stream().map((feed)->mappingPreviewDto(feed,userEntity)).toList();
+	}
+	/**
+	 * 그룹 별 상위 랭킹 게시글 조회
+	 * @param userUuid
+	 * @param groupId
+	 * @return
+	 */
+	@Deprecated
+	@Transactional(readOnly=true)
+	public List<PostPreViewDTO> getRankPostPreviewWithPage(String userUuid, String groupId){
+		MemberEntity userEntity = memberRepository.findById(userUuid)
+				.orElseThrow(()-> new CommonAPIException(MemberExceptionConst.UNAUTHORIZED));
+		
+		GroupEntity groupEntity = groupRepository.findById(groupId)
+				.orElseThrow(()-> new CommonAPIException(MemberExceptionConst.UNAUTHORIZED));
+		
+		if(!userEntity.isInGroup(groupEntity))
+			throw new CommonAPIException(MemberExceptionConst.UNAUTHORIZED);
+		
+		List<FeedBaseEntity> postBaseEntitys = feedBaseRepository.findByRankFeed(groupId);
+		
 		return postBaseEntitys.stream().map((feed)->mappingPreviewDto(feed,userEntity)).toList();
 	}
 	/**
@@ -56,18 +91,25 @@ public class FeedService {
 	 * @param userEntity
 	 * @return extended PostPreViewDTO
 	 */
-	private PostPreViewDTO mappingPreviewDto(FeedBaseEntity entity, MemberEntity userEntity) {
+	public PostPreViewDTO mappingPreviewDto(FeedBaseEntity entity, MemberEntity userEntity) {
 		//Whisper 게시글일 경우 dto 매핑
+		
+		
 		if(entity instanceof WhisperEntity whisper) {
-			if(whisper.getImageName() != null) {
-				String imageUrl = imageService.getPresignedUrl(whisper.getImageName());
-				return WhisperPreViewDTO.mappingDTO(whisper,userEntity,imageUrl);
-			}
-			return WhisperPreViewDTO.mappingDTO(whisper,userEntity,null);
-		}
-		if(entity instanceof SecretEntity secret) {
-			return SecretPreViewDTO.mappingDTO(secret);
-		}
+	        // ⭐️ 방어 로직 적용 (Whisper DTO 매핑 메서드 내부로 이동 권장)
+	        
+	        if(whisper.getImageName() != null) {
+	            String imageUrl = imageService.getPresignedUrl(whisper.getImageName());
+	            return WhisperPreViewDTO.mappingDTO(whisper,userEntity,imageUrl);
+	        }
+	        return WhisperPreViewDTO.mappingDTO(whisper,userEntity,null);
+	    }
+	    
+	    // Secret 게시글일 경우 dto 매핑
+	    if(entity instanceof SecretEntity secret) {
+	        // ⭐️ 방어 로직 적용 (Secret DTO 매핑 메서드 내부로 이동 권장)
+	        return SecretPreViewDTO.mappingDTO(secret);
+	    }
 		return null;
 	}
 }

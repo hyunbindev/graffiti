@@ -6,6 +6,8 @@ import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactor
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.repository.configuration.EnableRedisRepositories;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
+import org.springframework.data.redis.serializer.GenericToStringSerializer;
+import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 @Configuration
@@ -16,7 +18,7 @@ public class RedisConfig {
 		return new LettuceConnectionFactory();
 	}
 	@Bean
-	public RedisTemplate<String, Object> redisTemplate(LettuceConnectionFactory connectionFactory){
+	public RedisTemplate<String, Object> redisViewCountTemplate(LettuceConnectionFactory connectionFactory){
 		RedisTemplate<String, Object> template = new RedisTemplate<>();
 		template.setConnectionFactory(connectionFactory);
 		

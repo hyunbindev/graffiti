@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.hyunbindev.graffiti.data.post.PostPreViewDTO;
 import com.hyunbindev.graffiti.service.feed.FeedService;
+import com.hyunbindev.graffiti.service.feed.RankFeedService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -19,8 +20,30 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class FeedController {
 	private final FeedService feedService;
+	private final RankFeedService feedRankService;
+	/**
+	 * 최신글 조회
+	 * @param auth
+	 * @param lastId
+	 * @param size
+	 * @return
+	 */
 	@GetMapping
 	public ResponseEntity<List<PostPreViewDTO>> getRecentPreviewPage(Authentication auth,@RequestParam(name="lastId", required=false) Long lastId, @RequestParam(name="size") int size){
 		return ResponseEntity.ok(feedService.getRecentPostPreviewWithPage(auth.getName(), lastId, size));
 	}
-}
+	
+	/**
+	 * 인기글 상위 10개 조회
+	 * @param auth
+	 * @param groupId
+	 * @return
+	 */
+	@GetMapping("/rank")
+	public ResponseEntity<List<PostPreViewDTO>> getRankPreviewPage(Authentication auth,
+			@RequestParam(name="groupId", required=true) String groupId ,
+			@RequestParam(name="page", required=true)int page,
+			@RequestParam(name="size", required=true)int size){
+		return ResponseEntity.ok(feedRankService.getRankFeedByGroup(auth.getName(), groupId, page, size));
+	}
+} 

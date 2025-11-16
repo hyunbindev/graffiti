@@ -2,8 +2,6 @@ package com.hyunbindev.graffiti.entity.jpa.post.whisper;
 
 import java.util.List;
 
-import org.hibernate.annotations.BatchSize;
-
 import com.hyunbindev.graffiti.entity.jpa.member.MemberEntity;
 import com.hyunbindev.graffiti.entity.jpa.post.FeedBaseEntity;
 
