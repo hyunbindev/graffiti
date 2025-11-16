@@ -1,11 +1,7 @@
 package com.hyunbindev.graffiti.service.feed;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 
 import org.springframework.data.redis.core.RedisTemplate;
@@ -67,7 +63,10 @@ public class RankFeedService {
 		List<FeedBaseEntity> feedEntitys = feedBaseRepository.findAllById(pagedFeedIds);
 		return feedEntitys.stream().map((feed)-> feedService.mappingPreviewDto(feed, user)).toList();
 	}
-	
+	/**
+	 * 피드 랭크 테스트
+	 */
+	@Deprecated
 	public void testInsert() {
 		String redisKey = "rank_feed:4de92e18-aeeb-4a45-a3f1-a5c657fa4b86";
 		
