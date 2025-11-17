@@ -1,4 +1,4 @@
-package com.hyunbindev.graffiti.service.feed;
+package com.hyunbindev.graffiti.service.feed.rank;
 
 import java.util.HashSet;
 import java.util.List;
@@ -58,7 +58,7 @@ public class FeedRankBatch {
 		
 		public RankScoreDTO(Long feedId, Double score) {
 			this.feedId=feedId;
-			this.score=score;
+			this.score=score; 
 		}
 	}
 }

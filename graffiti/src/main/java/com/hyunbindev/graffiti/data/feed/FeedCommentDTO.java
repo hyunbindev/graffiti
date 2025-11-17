@@ -1,4 +1,4 @@
-package com.hyunbindev.graffiti.data.whisper;
+package com.hyunbindev.graffiti.data.feed;
 
 import java.time.LocalDateTime;
 
@@ -10,14 +10,14 @@ import lombok.Getter;
 
 @Builder
 @Getter
-public class WhisperCommentDTO {
+public class FeedCommentDTO {
 	private Long id;
 	private MemberInfoDTO author;
 	private LocalDateTime createdAt;
 	private String text;
 	
-	public static WhisperCommentDTO mappingDTO(FeedCommentEntity entity) {
-		return WhisperCommentDTO.builder()
+	public static FeedCommentDTO mappingDTO(FeedCommentEntity entity) {
+		return FeedCommentDTO.builder()
 				.id(entity.getId())
 				.author(new MemberInfoDTO(entity.getAuthor()))
 				.createdAt(entity.getCreatedAt())

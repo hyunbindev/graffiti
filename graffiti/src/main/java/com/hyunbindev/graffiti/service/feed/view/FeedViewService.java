@@ -1,4 +1,4 @@
-package com.hyunbindev.graffiti.service.feed;
+package com.hyunbindev.graffiti.service.feed.view;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;

@@ -1,4 +1,4 @@
-package com.hyunbindev.graffiti.data.post;
+package com.hyunbindev.graffiti.data.feed;
 
 import java.util.List;
 

@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.hyunbindev.graffiti.service.feed.RankFeedService;
+import com.hyunbindev.graffiti.service.feed.rank.RankFeedService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -13,10 +13,8 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/api/v1/test")
 @RequiredArgsConstructor
 public class TestController {
-	private final RankFeedService rankFeedService;
 	@GetMapping
 	public ResponseEntity<String> testAPI(){
-		rankFeedService.testInsert();
 		return ResponseEntity.ok("test ok!");
 	}
 }

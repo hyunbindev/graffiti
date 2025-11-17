@@ -6,9 +6,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.hyunbindev.graffiti.constant.exception.MemberExceptionConst;
-import com.hyunbindev.graffiti.data.post.PostPreViewDTO;
-import com.hyunbindev.graffiti.data.post.SecretPreViewDTO;
-import com.hyunbindev.graffiti.data.post.WhisperPreViewDTO;
+import com.hyunbindev.graffiti.data.feed.PostPreViewDTO;
+import com.hyunbindev.graffiti.data.feed.SecretPreViewDTO;
+import com.hyunbindev.graffiti.data.feed.WhisperPreViewDTO;
 import com.hyunbindev.graffiti.entity.jpa.group.GroupEntity;
 import com.hyunbindev.graffiti.entity.jpa.member.MemberEntity;
 import com.hyunbindev.graffiti.entity.jpa.post.FeedBaseEntity;

@@ -74,4 +74,20 @@ public class  FeedBaseEntity{
 	public void increViewCount(long viewCount) {
 		this.viewCount+=viewCount;
 	}
+	
+	public void increCommentCount() {
+		this.commentCount++;
+	}
+	
+	public void decreCommentCount() {
+		this.commentCount--;
+	}
+	
+	public void increLikeCount() {
+		this.likeCount++;
+	}
+	
+	public void decreLikeCount() {
+		this.likeCount--;
+	}
 }

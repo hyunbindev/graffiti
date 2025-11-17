@@ -44,6 +44,7 @@ public class FeedCommentEntity {
 	//부모 게시글
 	@NotNull
 	@ManyToOne(fetch = FetchType.LAZY)
+	@Getter
 	private FeedBaseEntity feed;
 	
 	//작성 내용

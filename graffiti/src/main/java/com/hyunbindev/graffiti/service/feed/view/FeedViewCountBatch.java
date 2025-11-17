@@ -1,4 +1,4 @@
-package com.hyunbindev.graffiti.service.feed;
+package com.hyunbindev.graffiti.service.feed.view;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -23,7 +23,6 @@ public class FeedViewCountBatch {
 	private final String FEED_VIEW_PREFIX = "feedView:";
 	private final int CHUNK_SIZE = 1000;
 	private final FeedViewService feedViewService;
-	
 	
 	@Scheduled(cron = "0 0 0 * * *")
 	public void syncViewCount() {

@@ -1,4 +1,4 @@
-package com.hyunbindev.graffiti.data.post;
+package com.hyunbindev.graffiti.data.feed;
 
 import lombok.Getter;
 import lombok.experimental.SuperBuilder;

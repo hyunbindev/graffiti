@@ -25,9 +25,9 @@ import com.hyunbindev.graffiti.exception.CommonAPIException;
 import com.hyunbindev.graffiti.repository.jpa.MemberRepository;
 import com.hyunbindev.graffiti.repository.jpa.group.GroupRepository;
 import com.hyunbindev.graffiti.repository.jpa.whisper.WhisperRepository;
-import com.hyunbindev.graffiti.service.feed.FeedCommentService;
-import com.hyunbindev.graffiti.service.feed.FeedLikeService;
-import com.hyunbindev.graffiti.service.feed.FeedViewService;
+import com.hyunbindev.graffiti.service.feed.comment.FeedCommentService;
+import com.hyunbindev.graffiti.service.feed.like.FeedLikeService;
+import com.hyunbindev.graffiti.service.feed.view.FeedViewService;
 import com.hyunbindev.graffiti.service.image.ImageService;
 
 import lombok.AllArgsConstructor;
@@ -174,9 +174,9 @@ public class WhisperService {
 		//사용자 조회 계산
 		long viewCount = feedViewService.getViewCountAndSync(feedId, userUuid);
 		//좋아요 수 집계
-		long likeCount = feedLikeService.getFeedCount(whisper);
+		long likeCount = whisper.getLikeCount();
 		//덧글 수 집계
-		long commentCount = feedCommentService.getCommentCount(whisper);
+		long commentCount = whisper.getCommentCount();
 		
 		//이미지 존재시
 		if(whisper.getImageName() != null) {

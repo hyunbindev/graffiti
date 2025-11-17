@@ -1,4 +1,4 @@
-package com.hyunbindev.graffiti.service.feed;
+package com.hyunbindev.graffiti.service.feed.rank;
 
 import java.util.HashSet;
 import java.util.List;
@@ -9,7 +9,7 @@ import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Service;
 
 import com.hyunbindev.graffiti.constant.exception.MemberExceptionConst;
-import com.hyunbindev.graffiti.data.post.PostPreViewDTO;
+import com.hyunbindev.graffiti.data.feed.PostPreViewDTO;
 import com.hyunbindev.graffiti.entity.jpa.group.GroupEntity;
 import com.hyunbindev.graffiti.entity.jpa.member.MemberEntity;
 import com.hyunbindev.graffiti.entity.jpa.post.FeedBaseEntity;
@@ -17,6 +17,7 @@ import com.hyunbindev.graffiti.exception.CommonAPIException;
 import com.hyunbindev.graffiti.repository.jpa.FeedBaseRepository;
 import com.hyunbindev.graffiti.repository.jpa.MemberRepository;
 import com.hyunbindev.graffiti.repository.jpa.group.GroupRepository;
+import com.hyunbindev.graffiti.service.feed.FeedService;
 
 import io.jsonwebtoken.lang.Collections;
 import lombok.RequiredArgsConstructor;

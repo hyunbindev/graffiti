@@ -1,4 +1,4 @@
-package com.hyunbindev.graffiti.data.post;
+package com.hyunbindev.graffiti.data.feed;
 
 import com.hyunbindev.graffiti.constant.feed.FeedType;
 import com.hyunbindev.graffiti.data.member.MemberInfoDTO;
