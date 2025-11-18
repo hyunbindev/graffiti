@@ -14,6 +14,9 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import com.hyunbindev.graffiti.entity.jpa.post.FeedBaseEntity;
+import com.hyunbindev.graffiti.repository.jpa.feed.FeedBaseRepository;
+
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +29,10 @@ public class FeedViewService {
 	@Qualifier("viewCountRedisTemplate")
 	private final RedisTemplate<String, String> redisTemplate;
 	private final JdbcTemplate jdbcTemplate;
+	
+	
+	private final FeedBaseRepository feedBaseRepository;
+	
 	public long getViewCountAndSync(Long feedId, String userUuid) {
 		String key = "feedView:"+ feedId;
 		

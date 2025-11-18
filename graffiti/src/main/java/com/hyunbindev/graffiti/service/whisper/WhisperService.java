@@ -1,20 +1,16 @@
 package com.hyunbindev.graffiti.service.whisper;
 
 import java.util.List;
-import java.util.UUID;
 
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.hyunbindev.graffiti.constant.exception.MemberExceptionConst;
 import com.hyunbindev.graffiti.constant.exception.WhisperExceptionConst;
-import com.hyunbindev.graffiti.constant.feed.FeedType;
 import com.hyunbindev.graffiti.data.whisper.WhisperCreateDTO;
 import com.hyunbindev.graffiti.data.whisper.WhisperDTO;
 import com.hyunbindev.graffiti.entity.jpa.group.GroupEntity;
@@ -25,6 +21,7 @@ import com.hyunbindev.graffiti.exception.CommonAPIException;
 import com.hyunbindev.graffiti.repository.jpa.MemberRepository;
 import com.hyunbindev.graffiti.repository.jpa.group.GroupRepository;
 import com.hyunbindev.graffiti.repository.jpa.whisper.WhisperRepository;
+import com.hyunbindev.graffiti.service.feed.comment.FeedCommentCountService;
 import com.hyunbindev.graffiti.service.feed.comment.FeedCommentService;
 import com.hyunbindev.graffiti.service.feed.like.FeedLikeService;
 import com.hyunbindev.graffiti.service.feed.view.FeedViewService;
@@ -46,7 +43,7 @@ public class WhisperService {
 	private final FeedViewService feedViewService;
 	private final FeedLikeService feedLikeService;
 	private final FeedCommentService feedCommentService;
-	
+	private final FeedCommentCountService feedCommentCountService;
 	private final ImageService imageService;
 	
 	private final ApplicationEventPublisher eventPublisher;
@@ -176,7 +173,7 @@ public class WhisperService {
 		//좋아요 수 집계
 		long likeCount = whisper.getLikeCount();
 		//덧글 수 집계
-		long commentCount = whisper.getCommentCount();
+		long commentCount = whisper.getCommentCount()+feedCommentCountService.getCommentCount(feedId);
 		
 		//이미지 존재시
 		if(whisper.getImageName() != null) {

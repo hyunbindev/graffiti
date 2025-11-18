@@ -26,7 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class WebpConvertConsumer {
+public class WebpConvertEventListener {
 	private final MinioClient minioClient;
 	
 	

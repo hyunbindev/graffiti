@@ -17,7 +17,7 @@ public class RedisConfig {
 	LettuceConnectionFactory connectionFactory() {
 		return new LettuceConnectionFactory();
 	}
-	@Bean
+	@Bean("redisViewCountTemplate")
 	public RedisTemplate<String, Object> redisViewCountTemplate(LettuceConnectionFactory connectionFactory){
 		RedisTemplate<String, Object> template = new RedisTemplate<>();
 		template.setConnectionFactory(connectionFactory);
@@ -32,4 +32,18 @@ public class RedisConfig {
 		
 		return template;
 	}
+	@Bean("redisCommentCountTemplate")
+    public RedisTemplate<String, Long> redisCommentCountTemplate(LettuceConnectionFactory connectionFactory) {
+        RedisTemplate<String, Long> template = new RedisTemplate<>();
+        template.setConnectionFactory(connectionFactory);
+
+        template.setKeySerializer(new StringRedisSerializer());
+        template.setHashKeySerializer(new StringRedisSerializer());
+
+        template.setValueSerializer(new StringRedisSerializer());
+        template.setHashValueSerializer(new StringRedisSerializer());
+
+        template.afterPropertiesSet();
+        return template;
+    }
 }

@@ -12,9 +12,9 @@ import com.hyunbindev.graffiti.entity.jpa.post.FeedBaseEntity;
 import com.hyunbindev.graffiti.entity.jpa.post.FeedLikeEntity;
 import com.hyunbindev.graffiti.entity.jpa.post.whisper.WhisperEntity;
 import com.hyunbindev.graffiti.exception.CommonAPIException;
-import com.hyunbindev.graffiti.repository.jpa.FeedBaseRepository;
 import com.hyunbindev.graffiti.repository.jpa.FeedLikeRepository;
 import com.hyunbindev.graffiti.repository.jpa.MemberRepository;
+import com.hyunbindev.graffiti.repository.jpa.feed.FeedBaseRepository;
 
 import lombok.RequiredArgsConstructor;
 

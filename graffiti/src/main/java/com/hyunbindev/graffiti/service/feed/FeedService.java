@@ -15,8 +15,8 @@ import com.hyunbindev.graffiti.entity.jpa.post.FeedBaseEntity;
 import com.hyunbindev.graffiti.entity.jpa.post.secret.SecretEntity;
 import com.hyunbindev.graffiti.entity.jpa.post.whisper.WhisperEntity;
 import com.hyunbindev.graffiti.exception.CommonAPIException;
-import com.hyunbindev.graffiti.repository.jpa.FeedBaseRepository;
 import com.hyunbindev.graffiti.repository.jpa.MemberRepository;
+import com.hyunbindev.graffiti.repository.jpa.feed.FeedBaseRepository;
 import com.hyunbindev.graffiti.repository.jpa.group.GroupRepository;
 import com.hyunbindev.graffiti.service.image.ImageService;
 
@@ -59,28 +59,6 @@ public class FeedService {
 			log.debug("id : {}", e.getId());
 		}
 		
-		
-		return postBaseEntitys.stream().map((feed)->mappingPreviewDto(feed,userEntity)).toList();
-	}
-	/**
-	 * 그룹 별 상위 랭킹 게시글 조회
-	 * @param userUuid
-	 * @param groupId
-	 * @return
-	 */
-	@Deprecated
-	@Transactional(readOnly=true)
-	public List<PostPreViewDTO> getRankPostPreviewWithPage(String userUuid, String groupId){
-		MemberEntity userEntity = memberRepository.findById(userUuid)
-				.orElseThrow(()-> new CommonAPIException(MemberExceptionConst.UNAUTHORIZED));
-		
-		GroupEntity groupEntity = groupRepository.findById(groupId)
-				.orElseThrow(()-> new CommonAPIException(MemberExceptionConst.UNAUTHORIZED));
-		
-		if(!userEntity.isInGroup(groupEntity))
-			throw new CommonAPIException(MemberExceptionConst.UNAUTHORIZED);
-		
-		List<FeedBaseEntity> postBaseEntitys = feedBaseRepository.findByRankFeed(groupId);
 		
 		return postBaseEntitys.stream().map((feed)->mappingPreviewDto(feed,userEntity)).toList();
 	}

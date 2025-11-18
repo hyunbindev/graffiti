@@ -14,8 +14,8 @@ import com.hyunbindev.graffiti.entity.jpa.group.GroupEntity;
 import com.hyunbindev.graffiti.entity.jpa.member.MemberEntity;
 import com.hyunbindev.graffiti.entity.jpa.post.FeedBaseEntity;
 import com.hyunbindev.graffiti.exception.CommonAPIException;
-import com.hyunbindev.graffiti.repository.jpa.FeedBaseRepository;
 import com.hyunbindev.graffiti.repository.jpa.MemberRepository;
+import com.hyunbindev.graffiti.repository.jpa.feed.FeedBaseRepository;
 import com.hyunbindev.graffiti.repository.jpa.group.GroupRepository;
 import com.hyunbindev.graffiti.service.feed.FeedService;
 
@@ -64,6 +64,29 @@ public class RankFeedService {
 		List<FeedBaseEntity> feedEntitys = feedBaseRepository.findAllById(pagedFeedIds);
 		return feedEntitys.stream().map((feed)-> feedService.mappingPreviewDto(feed, user)).toList();
 	}
+	/**
+	 * 데이터 베이스에서 산출
+	 * @param userUuid
+	 * @param groupId
+	 * @param page
+	 * @param size
+	 * @return
+	 */
+	public List<PostPreViewDTO> getRankFeedByGroupInDatabase(String userUuid, String groupId, int page, int size){
+		MemberEntity user = memberRepository.findById(userUuid)
+				.orElseThrow(()-> new CommonAPIException(MemberExceptionConst.NOT_FOUND));
+		
+		GroupEntity group = groupRepository.findById(groupId)
+				.orElseThrow(()-> new CommonAPIException(MemberExceptionConst.UNAUTHORIZED));
+		
+		if(!user.isInGroup(group))
+			throw new CommonAPIException(MemberExceptionConst.UNAUTHORIZED);
+		
+		List<Long> feedIds = feedBaseRepository.findByRankFeed(groupId);
+		List<FeedBaseEntity> feedBaseEntitys = feedBaseRepository.findAllById(feedIds);
+		return feedBaseEntitys.stream().map((feed)-> feedService.mappingPreviewDto(feed, user)).toList();
+	}
+	
 	/**
 	 * 피드 랭크 테스트
 	 */

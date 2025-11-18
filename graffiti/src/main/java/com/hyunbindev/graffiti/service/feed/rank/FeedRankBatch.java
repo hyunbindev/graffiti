@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.hyunbindev.graffiti.entity.jpa.group.GroupEntity;
-import com.hyunbindev.graffiti.repository.jpa.FeedBaseRepository;
+import com.hyunbindev.graffiti.repository.jpa.feed.FeedBaseRepository;
 import com.hyunbindev.graffiti.repository.jpa.group.GroupRepository;
 
 import lombok.Getter;

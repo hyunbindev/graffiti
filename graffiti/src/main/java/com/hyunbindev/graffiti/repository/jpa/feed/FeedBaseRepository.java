@@ -1,14 +1,18 @@
-package com.hyunbindev.graffiti.repository.jpa;
+package com.hyunbindev.graffiti.repository.jpa.feed;
 
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.hyunbindev.graffiti.entity.jpa.post.FeedBaseEntity;
 import com.hyunbindev.graffiti.service.feed.rank.FeedRankBatch;
+
+import jakarta.persistence.LockModeType;
 
 public interface FeedBaseRepository extends JpaRepository<FeedBaseEntity,Long> {
 	/**
@@ -66,19 +70,38 @@ public interface FeedBaseRepository extends JpaRepository<FeedBaseEntity,Long> {
 	 * @param groupId
 	 * @return
 	 */
-	List<FeedBaseEntity> findByRankFeed(@Param("groupId") String groupId);
+	@Query(value = """
+		SELECT fbe.id, (
+		    (COALESCE(fbe.comment_count, 0) * 1.5 + COALESCE(fbe.like_count, 0) * 2.0 + COALESCE(fbe.view_count, 0) * 0.5)
+		    +
+		    (10.0 / LOG2(TIMESTAMPDIFF(HOUR, fbe.created_at, NOW()) + 2.0))
+		) AS rank_score
+		FROM feed_base_entity fbe
+		WHERE fbe.deleted = 0
+		AND fbe.group_id = :groupId
+		ORDER BY rank_score DESC, fbe.created_at DESC
+		LIMIT 10;
+		""", nativeQuery = true)
+	List<Long> findByRankFeed(@Param("groupId") String groupId);
 	
-	/**
-	 * 그룹 별 인기 게시글 산출 쿼리
-	 * 덧글 점수 0.4
-	 * 좋아요 점수 0.3
-	 * 조회수 0.1
-	 * 시간 감쇄 LOG10(현재 시간 - 작성날짜)
-	 * @return
-	 */
+	@Query(value = """
+			SELECT fbe.id, (
+			    (COALESCE(fbe.comment_count, 0) * 1.5 + COALESCE(fbe.like_count, 0) * 2.0 + COALESCE(fbe.view_count, 0) * 0.5)
+			    +
+			    (10.0 / LOG2(TIMESTAMPDIFF(HOUR, fbe.created_at, NOW()) + 2.0))
+			) AS rank_score
+			FROM feed_base_entity fbe
+			WHERE fbe.deleted = 0
+			AND fbe.group_id = :groupId
+			ORDER BY rank_score DESC, fbe.created_at DESC
+			LIMIT :limit;
+			""", nativeQuery = true)
 	List<FeedRankBatch.RankScoreDTO> getRankFeedByGroupId(@Param("groupId")String groupId, @Param("limit")int limit);
 	
+	@Lock(LockModeType.PESSIMISTIC_WRITE)
+	@Query("SELECT f FROM FeedBaseEntity f WHERE f.id = :id")
+	Optional<FeedBaseEntity> findByIdForUpdate(@Param("id")Long id);
 	
-	
-	List<FeedBaseEntity> findByGroupIdAndTextPrefix(@Param("groupId")String groupId, @Param("keyword")String keyWord ,@Param("lastId")Long lastId, @Param("size")Integer size);
+	@Query("UPDATE FeedBaseEntity f SET f.commentCount = f.commentCount+1 WHERE f.id = :id")
+	void incrementCommentCount(@Param("id")Long id);
 } 

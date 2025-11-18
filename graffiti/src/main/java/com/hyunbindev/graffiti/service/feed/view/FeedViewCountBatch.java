@@ -24,7 +24,7 @@ public class FeedViewCountBatch {
 	private final int CHUNK_SIZE = 1000;
 	private final FeedViewService feedViewService;
 	
-	@Scheduled(cron = "0 0 0 * * *")
+	@Scheduled(cron = "0 0 0/6 * * *")
 	public void syncViewCount() {
 
 		long startTime = System.currentTimeMillis();

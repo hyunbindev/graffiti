@@ -47,7 +47,8 @@ public class FeedController {
 			@RequestParam(name="groupId", required=true) String groupId ,
 			@RequestParam(name="page", required=true)int page,
 			@RequestParam(name="size", required=true)int size){
-		return ResponseEntity.ok(feedRankService.getRankFeedByGroup(auth.getName(), groupId, page, size));
+		//return ResponseEntity.ok(feedRankService.getRankFeedByGroup(auth.getName(), groupId, page, size));
+		return ResponseEntity.ok(feedRankService.getRankFeedByGroupInDatabase(auth.getName(), groupId, page, size));
 	}
 	/**
 	 * 키워드 매칭 게시글 조회

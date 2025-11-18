@@ -32,7 +32,7 @@ public class HeaderAuthenticationFilter extends OncePerRequestFilter{
 		String userUuid = request.getHeader("X-User-UUID");
 		String userNickName = request.getHeader("X-User-NickName");
 		
-		log.info("{} : {} : {}",request.getRequestURI(),userUuid, userNickName);
+		//log.info("{} : {} : {}",request.getRequestURI(),userUuid, userNickName);
 		
 		if (userUuid != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 			//user principal

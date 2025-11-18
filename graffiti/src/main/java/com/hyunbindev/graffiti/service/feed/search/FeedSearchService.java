@@ -10,8 +10,8 @@ import com.hyunbindev.graffiti.entity.jpa.group.GroupEntity;
 import com.hyunbindev.graffiti.entity.jpa.member.MemberEntity;
 import com.hyunbindev.graffiti.entity.jpa.post.FeedBaseEntity;
 import com.hyunbindev.graffiti.exception.CommonAPIException;
-import com.hyunbindev.graffiti.repository.jpa.FeedBaseRepository;
 import com.hyunbindev.graffiti.repository.jpa.MemberRepository;
+import com.hyunbindev.graffiti.repository.jpa.feed.FeedBaseRepository;
 import com.hyunbindev.graffiti.repository.jpa.group.GroupRepository;
 import com.hyunbindev.graffiti.service.feed.FeedService;
 
@@ -38,10 +38,13 @@ public class FeedSearchService {
 		
 		keyWord+="%";
 		
+		/**
 		List<FeedBaseEntity> feedEntitys = feedBaseRepository.findByGroupIdAndTextPrefix(groupId, keyWord, lastId, size);
 		
 		return feedEntitys.stream()
 				.map((feed)->feedService.mappingPreviewDto(feed, member))
 				.toList();
+				*/
+		return null;
 	}
 }

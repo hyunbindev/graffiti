@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.hyunbindev.graffiti.config.MinioConfig;
-import com.hyunbindev.graffiti.config.RabbitWebpConvertQueueConfig;
+import com.hyunbindev.graffiti.config.rabbitMQ.RabbitWebpConvertQueueConfig;
 import com.hyunbindev.graffiti.exception.CommonAPIException;
 
 import io.minio.GetPresignedObjectUrlArgs;

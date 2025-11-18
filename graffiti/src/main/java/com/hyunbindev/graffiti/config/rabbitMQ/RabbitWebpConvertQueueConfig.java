@@ -1,7 +1,8 @@
-package com.hyunbindev.graffiti.config;
+package com.hyunbindev.graffiti.config.rabbitMQ;
 
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
+import org.springframework.amqp.core.DirectExchange;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.core.TopicExchange;
 import org.springframework.amqp.rabbit.annotation.EnableRabbit;
@@ -15,17 +16,17 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @EnableRabbit
 public class RabbitWebpConvertQueueConfig {
-	@Bean("webpContvertQeue")
+	@Bean("webpConvertQueue")
 	public Queue webpConvertQueue() {
 		return new Queue(Config.QUEUE.getValue(),true);
 	}
 	
 	@Bean("webpConvertExchange")
-	public TopicExchange webpConvertExchange() {
-		return new TopicExchange(Config.EXHANGE.getValue());
+	public DirectExchange webpConvertExchange() {
+		return new DirectExchange(Config.EXHANGE.getValue(), true, false);
 	}
 	@Bean
-	public Binding notificationBinding(@Qualifier("webpContvertQeue")Queue queue, @Qualifier("webpConvertExchange")TopicExchange exchange) {
+	public Binding notificationBinding(@Qualifier("webpConvertQueue")Queue queue, @Qualifier("webpConvertExchange")DirectExchange exchange) {
 		return BindingBuilder.bind(queue)
 				.to(exchange)
 				.with(Config.ROUTING.getValue());

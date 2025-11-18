@@ -38,6 +38,7 @@ public class FeedCommentController {
 		feedCommentService.createWhisperComment(auth.getName(), feedId, createDto);
 		return ResponseEntity.ok().build();
 	}
+	
 	/**
 	 * Feed 덧글 삭제
 	 * @param auth
@@ -49,6 +50,7 @@ public class FeedCommentController {
 		feedCommentService.deleteWhisperComment(auth.getName(), commentId);
 		return ResponseEntity.ok().build();
 	}
+	
 	/**
 	 * Feed 덧글 조회
 	 * @param auth

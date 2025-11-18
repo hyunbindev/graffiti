@@ -1,4 +1,4 @@
-package com.hyunbindev.graffiti.repository.jpa;
+package com.hyunbindev.graffiti.repository.jpa.feed;
 
 import java.util.List;
 

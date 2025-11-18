@@ -1,6 +1,14 @@
 package com.hyunbindev.graffiti.service.feed.comment;
 
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+
+
+import org.springframework.jdbc.core.BatchPreparedStatementSetter;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,9 +22,9 @@ import com.hyunbindev.graffiti.entity.jpa.post.FeedBaseEntity;
 import com.hyunbindev.graffiti.entity.jpa.post.FeedCommentEntity;
 import com.hyunbindev.graffiti.entity.jpa.post.whisper.WhisperEntity;
 import com.hyunbindev.graffiti.exception.CommonAPIException;
-import com.hyunbindev.graffiti.repository.jpa.FeedBaseRepository;
-import com.hyunbindev.graffiti.repository.jpa.FeedCommentRepository;
 import com.hyunbindev.graffiti.repository.jpa.MemberRepository;
+import com.hyunbindev.graffiti.repository.jpa.feed.FeedBaseRepository;
+import com.hyunbindev.graffiti.repository.jpa.feed.FeedCommentRepository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,8 +37,9 @@ public class FeedCommentService {
 	private final FeedBaseRepository feedBaseRepository;
 	private final MemberRepository memberRepository;
 	private final FeedCommentCountService feedCommentCountService;
+	private final JdbcTemplate jdbcTemplate;
 	/**
-	 * Whiper feed 덧글 생성
+	 * feed 덧글 생성
 	 * @author hyunbinDev
 	 * 
 	 * @param userUuid
@@ -52,12 +61,13 @@ public class FeedCommentService {
 		//그룹에 포함되지 않은 사용자가 덧글 작성 시도시 예외 처리
 		if(!author.isInGroup(feed.getGroup()))
 			throw new CommonAPIException(MemberExceptionConst.UNAUTHORIZED);
-		
+		 
 		//언급 사용자 조회 금지시 예외 처리
 		if(feed instanceof WhisperEntity whisper) {
 			if(whisper.isInvisibleMention() && whisper.getMentionMembers().contains(author))
 				throw new CommonAPIException(WhisperExceptionConst.FORBIDDEN);	
 		}
+		
 		
 		FeedCommentEntity comment = FeedCommentEntity.builder()
 				//부모 게시글 설정
@@ -68,9 +78,8 @@ public class FeedCommentService {
 				.text(createDto.getText())
 				.deleted(false)
 				.build();
-		//덧글 수 증가
-		feedCommentCountService.incrementFeedCommentCount(feed);
 		//덧글 저장
+		feedCommentCountService.incrementCommentCount(whisperFeedId);
 		feedCommentRepository.save(comment);
 	}
 	/**
@@ -119,8 +128,36 @@ public class FeedCommentService {
 		if(!comment.getAuthor().equals(author))
 			throw new CommonAPIException(MemberExceptionConst.UNAUTHORIZED);
 		
-		feedCommentCountService.decrementFeedCommentCount(comment.getFeed());
+		//덧글수 카운트 수정될 예정
+		feedCommentCountService.decrementCommentCount(whisperCommentId);
 		
 		comment.setDeleted(true);
 	}
+	/**
+	 * Comment Count 배치처리
+	 * @param viewCountMap
+	 */
+	@Transactional
+	public void syncCommentCount(Map<Long,Long> commentCountMap) {
+        if (commentCountMap.isEmpty()) {
+            return;
+        }
+        final String sql = "UPDATE feed_base_entity SET comment_count = comment_count + ? WHERE id = ?";
+        
+        List<Entry<Long, Long>> updates = commentCountMap.entrySet().stream().toList();
+        
+        jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
+            @Override
+            public void setValues(PreparedStatement ps, int i) throws SQLException {
+                Entry<Long, Long> entry = updates.get(i);
+                ps.setLong(1, entry.getValue());
+                ps.setLong(2, entry.getKey());   
+            }
+            @Override
+            public int getBatchSize() {
+                return updates.size();
+            }
+        });
+	}
+	
 }
