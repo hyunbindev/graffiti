@@ -22,7 +22,7 @@ public class WhisperPreViewDTO extends PostPreViewDTO{
 	 * @param entity
 	 * @return
 	 */
-	public static WhisperPreViewDTO mappingDTO(WhisperEntity entity, MemberEntity userEntity ,String imageUrl) {
+	public static WhisperPreViewDTO mappingDTO(WhisperEntity entity, MemberEntity userEntity ,String imageUrl, boolean isLike) {
 		//PostPreViewDTO 상속 WhisperPreViewDTO builder 생성
 		WhisperPreViewDTOBuilder<?,?> whisperPreViewDTOBuilder=WhisperPreViewDTO.builder()
 				//공통 필드
@@ -32,7 +32,8 @@ public class WhisperPreViewDTO extends PostPreViewDTO{
 				//생성 날자
 				.createdAt(entity.getCreatedAt())
 				.commentCount(entity.getCommentCount())
-				.likeCount(entity.getLikeCount());
+				.likeCount(entity.getLikeCount())
+				.isLiked(isLike);
 		//언급 대상 비공개시
 		if(entity.isInvisibleMention() && entity.getMentionMembers().contains(userEntity)) {
 			whisperPreViewDTOBuilder.isBlinded(true)

@@ -7,6 +7,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.hyunbindev.graffiti.constant.exception.MemberExceptionConst;
 import com.hyunbindev.graffiti.constant.exception.WhisperExceptionConst;
+import com.hyunbindev.graffiti.data.feed.FeedLikeDTO;
+import com.hyunbindev.graffiti.data.feed.FeedLikeDTO.FeedLikeDTOBuilder;
 import com.hyunbindev.graffiti.entity.jpa.member.MemberEntity;
 import com.hyunbindev.graffiti.entity.jpa.post.FeedBaseEntity;
 import com.hyunbindev.graffiti.entity.jpa.post.FeedLikeEntity;
@@ -32,12 +34,15 @@ public class FeedLikeService {
 	 * @return 이미 좋아하는 글일 경우 false, 아닐 경우 true
 	 */
 	@Transactional
-	public boolean likeFeed(String userUuid, Long feedId) {
+	public FeedLikeDTO likeFeed(String userUuid, Long feedId) {
 		MemberEntity user = memberRepository.findById(userUuid)
 				.orElseThrow(()-> new CommonAPIException(MemberExceptionConst.NOT_FOUND));
 		
 		FeedBaseEntity feed = feedBaseRepository.findById(feedId)
 				.orElseThrow(()-> new CommonAPIException(WhisperExceptionConst.NOT_FOUND_FEED));
+		
+		
+		FeedLikeDTOBuilder dtoBuilder = FeedLikeDTO.builder();
 		
 		//삭제된 게시글일 경우 예외 처리
 		if(feed.isDeleted())
@@ -57,10 +62,26 @@ public class FeedLikeService {
 		if(feedLike.isEmpty()) {
 			feedLikeRepository.save(new FeedLikeEntity(feed,user));
 			feedLikeCountService.incrementFeedLikeCount(feed);
-			return true;
+			dtoBuilder.isLike(true);
+			feed.increLikeCount();
+		}else {
+			feedLikeRepository.delete(feedLike.get());
+			feedLikeCountService.decrementFeedLikeCount(feed);
+			dtoBuilder.isLike(false);
+
+			feed.decreLikeCount();
 		}
-		feedLikeRepository.delete(feedLike.get());
-		feedLikeCountService.decrementFeedLikeCount(feed);
-		return false;
+		dtoBuilder.likeCount(feed.getLikeCount());
+		return dtoBuilder.build();
+	}
+	/**
+	 * 좋아요 한 게시글 확인
+	 * @param feedId 
+	 * @param userUuid
+	 * @return
+	 */
+	@Transactional(readOnly=true)
+	public boolean isLiked(Long feedId, String userUuid) {
+		return feedLikeRepository.existsByFeedIdAndLikerId(feedId, userUuid);
 	}
 }

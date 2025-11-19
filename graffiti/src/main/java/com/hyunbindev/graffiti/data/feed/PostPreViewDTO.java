@@ -19,5 +19,6 @@ public abstract class PostPreViewDTO {
 	private Long viewCount;
 	private Long commentCount;
 	private Long likeCount;
-	private boolean isBlinded;
+	private Boolean isLiked;
+	private Boolean isBlinded;
 }

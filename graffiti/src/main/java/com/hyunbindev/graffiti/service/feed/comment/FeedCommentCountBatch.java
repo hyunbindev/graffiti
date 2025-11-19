@@ -18,10 +18,10 @@ import lombok.extern.slf4j.Slf4j;
 public class FeedCommentCountBatch{
 	private final String FEED_COMMENT_PREFIX = "feedComment:";
 	private final int CHUNK_SIZE = 1000;
-	private final RedisTemplate<String,Integer> redisTemplate;
+	private final RedisTemplate<String,Object> redisTemplate;
 	private final FeedCommentService feedCommentService;
 	
-	@Scheduled(initialDelay = 120000, fixedRate = 21600000)
+	@Scheduled(initialDelay = 120000, fixedRate = 1800000)
 	public void syncCommentCount() {
 		long startTime = System.currentTimeMillis();
 		
@@ -33,21 +33,21 @@ public class FeedCommentCountBatch{
 		
 		Map<Long,Integer> commentCountMap = new HashMap<>();
 		try(cursor){
-			Map<Long, Long> feedViewsChunk = new HashMap<>();
+			Map<Long, Long> commenCountChunk = new HashMap<>();
 			while(cursor.hasNext()) {
 				String key = cursor.next();
-				Long count = (redisTemplate.opsForValue().get(key)).longValue();
+				Long count = ((Integer)redisTemplate.opsForValue().get(key)).longValue();
 				Long feedId = Long.parseLong(key.substring(FEED_COMMENT_PREFIX.length()));
 				redisTemplate.delete(key);
-				feedViewsChunk.put(feedId, count);
+				commenCountChunk.put(feedId, count);
 				
 				//청크 사이즈가 1000 개일 경우 나눠 배치 진행
 				if(commentCountMap.size()<CHUNK_SIZE) continue;
-				feedCommentService.syncCommentCount(feedViewsChunk);
+				feedCommentService.syncCommentCount(commenCountChunk);
 				commentCountMap.clear();
 			}
-			//1000개단위 나머지 배치 처리
-			feedCommentService.syncCommentCount(feedViewsChunk);
+			//1000개단위 나머지 배치 처리 
+			feedCommentService.syncCommentCount(commenCountChunk);
 		}catch(Exception e) {
 			log.error("Comment 배치 처리 실패{}",e);
 			//TODO-배치 처리 실패후 로직

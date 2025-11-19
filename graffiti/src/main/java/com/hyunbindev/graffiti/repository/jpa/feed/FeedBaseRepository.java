@@ -31,8 +31,8 @@ public interface FeedBaseRepository extends JpaRepository<FeedBaseEntity,Long> {
 			    fbe.view_count,
 			    fbe.deleted,
 			    fbe.group_id,
-			    (SELECT COUNT(*) FROM feed_comment_entity c WHERE c.feed_id = fbe.id) AS comment_count,
-			    (SELECT COUNT(*) FROM feed_like_entity l WHERE l.feed_id = fbe.id) AS like_count,
+			    fbe.comment_count,
+			    fbe.like_count,
 			    se.answer,
 			    se.hint,
 			    COALESCE(se.text, we.text) as text,
@@ -53,13 +53,13 @@ public interface FeedBaseRepository extends JpaRepository<FeedBaseEntity,Long> {
 					AND id < :lastId
 			    ORDER BY id DESC
 			    LIMIT :size) AS fbe_ids
-			        JOIN
+			    JOIN
 			    feed_base_entity fbe ON fbe.id = fbe_ids.id
-			        JOIN
+			    JOIN
 			    member_entity m ON m.id = fbe_ids.author_id
-			        LEFT JOIN
+			    LEFT JOIN
 			    secret_entity se ON fbe.id = se.id
-			        LEFT JOIN
+			    LEFT JOIN
 			    whisper_entity we ON fbe.id = we.id
             """,
            nativeQuery = true)

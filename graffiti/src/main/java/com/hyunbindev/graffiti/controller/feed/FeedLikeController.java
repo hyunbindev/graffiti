@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.hyunbindev.graffiti.data.feed.FeedLikeDTO;
 import com.hyunbindev.graffiti.service.feed.like.FeedLikeService;
 
 import lombok.RequiredArgsConstructor;
@@ -20,7 +21,7 @@ public class FeedLikeController {
 	private final FeedLikeService feedLikeService;
 	
 	@PostMapping("/{feedId}/like")
-	public ResponseEntity<Boolean> createFeedComment(Authentication auth, @PathVariable("feedId")Long feedId){
+	public ResponseEntity<FeedLikeDTO> createFeedComment(Authentication auth, @PathVariable("feedId")Long feedId){
 		return ResponseEntity.ok(feedLikeService.likeFeed(auth.getName(), feedId));
 	}
 }

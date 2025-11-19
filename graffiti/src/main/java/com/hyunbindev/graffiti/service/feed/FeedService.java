@@ -9,12 +9,12 @@ import com.hyunbindev.graffiti.constant.exception.MemberExceptionConst;
 import com.hyunbindev.graffiti.data.feed.PostPreViewDTO;
 import com.hyunbindev.graffiti.data.feed.SecretPreViewDTO;
 import com.hyunbindev.graffiti.data.feed.WhisperPreViewDTO;
-import com.hyunbindev.graffiti.entity.jpa.group.GroupEntity;
 import com.hyunbindev.graffiti.entity.jpa.member.MemberEntity;
 import com.hyunbindev.graffiti.entity.jpa.post.FeedBaseEntity;
 import com.hyunbindev.graffiti.entity.jpa.post.secret.SecretEntity;
 import com.hyunbindev.graffiti.entity.jpa.post.whisper.WhisperEntity;
 import com.hyunbindev.graffiti.exception.CommonAPIException;
+import com.hyunbindev.graffiti.repository.jpa.FeedLikeRepository;
 import com.hyunbindev.graffiti.repository.jpa.MemberRepository;
 import com.hyunbindev.graffiti.repository.jpa.feed.FeedBaseRepository;
 import com.hyunbindev.graffiti.repository.jpa.group.GroupRepository;
@@ -30,7 +30,7 @@ public class FeedService {
 	private final MemberRepository memberRepository;
 	private final ImageService imageService;
 	private final FeedBaseRepository feedBaseRepository;
-	private final GroupRepository groupRepository;
+	private final FeedLikeRepository feedLikeRepository;
 	//private final FeedBaseCustomRepsotory feedBaseCustomRepsotory;
 	/**
 	 * 최신순 전체 피드 조회
@@ -53,12 +53,7 @@ public class FeedService {
 		if(lastId==null)
 			lastId = Long.MAX_VALUE;
 		
-		List<FeedBaseEntity> postBaseEntitys = feedBaseRepository.findByDeletedIsFalseAndGroupIdInOrderByIdDesc(groupIds, size, lastId); 
-		
-		for(FeedBaseEntity e : postBaseEntitys) {
-			log.debug("id : {}", e.getId());
-		}
-		
+		List<FeedBaseEntity> postBaseEntitys = feedBaseRepository.findByDeletedIsFalseAndGroupIdInOrderByIdDesc(groupIds, size, lastId);
 		
 		return postBaseEntitys.stream().map((feed)->mappingPreviewDto(feed,userEntity)).toList();
 	}
@@ -72,21 +67,21 @@ public class FeedService {
 	public PostPreViewDTO mappingPreviewDto(FeedBaseEntity entity, MemberEntity userEntity) {
 		//Whisper 게시글일 경우 dto 매핑
 		
-		
+		boolean isLiked = feedLikeRepository.existsByFeedIdAndLikerId(entity.getId(), userEntity.getId());
 		if(entity instanceof WhisperEntity whisper) {
 	        // ⭐️ 방어 로직 적용 (Whisper DTO 매핑 메서드 내부로 이동 권장)
 	        
 	        if(whisper.getImageName() != null) {
 	            String imageUrl = imageService.getPresignedUrl(whisper.getImageName());
-	            return WhisperPreViewDTO.mappingDTO(whisper,userEntity,imageUrl);
+	            return WhisperPreViewDTO.mappingDTO(whisper,userEntity,imageUrl,isLiked);
 	        }
-	        return WhisperPreViewDTO.mappingDTO(whisper,userEntity,null);
+	        return WhisperPreViewDTO.mappingDTO(whisper,userEntity,null,isLiked);
 	    }
 	    
 	    // Secret 게시글일 경우 dto 매핑
 	    if(entity instanceof SecretEntity secret) {
 	        // ⭐️ 방어 로직 적용 (Secret DTO 매핑 메서드 내부로 이동 권장)
-	        return SecretPreViewDTO.mappingDTO(secret);
+	        return SecretPreViewDTO.mappingDTO(secret,isLiked);
 	    }
 		return null;
 	}

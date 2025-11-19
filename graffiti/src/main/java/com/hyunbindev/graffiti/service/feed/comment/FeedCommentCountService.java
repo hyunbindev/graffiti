@@ -43,6 +43,8 @@ public class FeedCommentCountService {
 		String key = FEED_KEY_PREFIX + feedId;
 		ValueOperations<String, Object> values = redisTemplate.opsForValue();
 		
+		if(values.get(key)==null)
+			return 0L;
 		Long commentCount = ((Integer)values.get(key)).longValue();
 		
 		return commentCount;

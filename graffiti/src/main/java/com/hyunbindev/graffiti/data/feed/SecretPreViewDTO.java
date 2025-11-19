@@ -14,7 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class SecretPreViewDTO extends PostPreViewDTO{
 	String hint;
-	public static SecretPreViewDTO mappingDTO(SecretEntity entity) {
+	public static SecretPreViewDTO mappingDTO(SecretEntity entity, boolean isLike) {
 		String preViewText = SecretService.randomText(entity.getText()).substring(0, Math.min(entity.getText().length(), 50));
 		return SecretPreViewDTO.builder()
 				.authorInfo(new MemberInfoDTO(entity.getAuthor()))
@@ -24,6 +24,7 @@ public class SecretPreViewDTO extends PostPreViewDTO{
 				.previewText(preViewText)
 				.commentCount(entity.getCommentCount())
 				.likeCount(entity.getLikeCount())
+				.isLiked(isLike)
 				.build();
 	}
 }
