@@ -1,0 +1,27 @@
+div.headerContainer{
+    height: 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: white;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 10;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.164);
+    padding:0.5rem 1rem;
+}
+div#profile{
+    display: flex;
+    align-items: center;
+}
+#profile img {
+    margin-right: 0.5rem;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%; /* 원형 */
+    object-fit: cover;
+}
+#profile span{
+    font-size: large;
+}

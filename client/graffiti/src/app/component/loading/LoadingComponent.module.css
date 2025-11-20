@@ -1,0 +1,20 @@
+div.loadingContainer{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    gap: 20px;
+}
+.loadingContainer #message {
+    font-size: larger;
+    font-weight: bold;
+}
+.loadingContainer #animation {
+    width: 10%;
+    height: 10%;
+}
+.loadingContainer #comment {
+    font-size: large;
+    color: rgb(77, 77, 77);
+}

@@ -1,0 +1,36 @@
+import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
+
+export const useAuthStore = create(
+  persist(
+    (set) => ({
+      accessToken: null,
+      isAuthenticated: false,
+      uuid: null,
+      nickName: null,
+      profileImgeUrl: null,
+
+      // Set user information
+      setUserInfo: (uuid, nickName, profileImgeUrl) =>
+        set(() => ({ uuid, nickName, profileImgeUrl })),
+
+      // Set access token and authentication status
+      setToken: (token) =>
+        set(() => ({ accessToken: token, isAuthenticated: !!token })),
+
+      // Clear user information and authentication status
+      clearAuth: () =>
+        set(() => ({
+          accessToken: null,
+          isAuthenticated: false,
+          uuid: null,
+          nickName: null,
+          profileImgeUrl: null,
+        })),
+    }),
+    {
+      name: 'auth-storage', // localStorage key
+      getStorage: () => localStorage, // localStorage 사용
+    }
+  )
+);

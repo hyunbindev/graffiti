@@ -1,22 +1,38 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
+import { useAuthStore } from '../zustand/useAuthStore'
+import axios from "axios";
+import LoadingComponent from "../component/loading/LoadingComponent";
 
 export default function AuthenticationCallback() {
-    const [token, setToken] = useState(null);
     const router = useRouter();
     const searchParams = useSearchParams();
 
+    const setToken = useAuthStore((state) => state.setToken);
+    const setUserInfo = useAuthStore((state) => state.setUserInfo);
+
+
     useEffect(()=>{
-        let token = searchParams.get("accessToken");
-        setToken(token);
+        const accessToken = searchParams.get("accessToken");
+        setToken(accessToken);
+        console.log("Access Token set:", accessToken);
+        axios.get("/api/v1/member/me",{
+            headers: {
+                Authorization: `${accessToken}`,},withCredentials: true
+        }).then((response) => {
+            const { uuid, nickName, profileImg } = response.data;
+            setUserInfo(uuid, nickName, profileImg);
+            router.push("/");
+        }).catch((error) => {
+            router.push("/login");
+        });
     },[]);
-
-
+    
     return (
-        <div>
-            {token}
-        </div>
+        <LoadingComponent>
+            로그인 중입니다.
+        </LoadingComponent>
     );
 }
