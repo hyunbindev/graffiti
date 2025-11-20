@@ -1,33 +1,47 @@
 "use client";
 import { useAuthStore } from '../../zustand/useAuthStore.js';
 import style from './FeedPreView.module.css'
-export default function FeedPreView() {
+import WhisperPreview from '../feed/whisper/WhisperPreview.jsx';
+import {getTimeConvert} from '../../util/dateConvert.js';
+export default function FeedPreView({data}) {
     const { nickName, profileImgeUrl } = useAuthStore();
+
+    const renderContent = (feed)=>{
+        switch(feed.type){
+            case "WHISPER":
+                return <WhisperPreview whisper={feed}/>;
+            case "SECRET":
+                return <p>secret</p>
+        }
+    }
+
     return (
         <div className={style.feedPreviewContainer}>
             <div className={style.feedPreview}>
                 <div className={style.feedPreviewHeader}>
                     <div className={style.authorProfile}>
-                        <img src='http://k.kakaocdn.net/dn/cbjheL/btsNsQ9q5bf/1uFET5kzv08pRKZLqCgUWk/img_640x640.jpg'/>
-                        <span>김현빈</span>
+                        <img src={data.authorInfo.profileImg}/>
+                        <span>{data.authorInfo.nickName}</span>
                     </div>
                     <div className={style.createdAt}>
-                        30분 전
+                        {getTimeConvert(data.createdAt)}
                     </div>
                 </div>
-                <div className={style.content}>content</div>
+                <div className={style.content}>
+                    {renderContent(data)}
+                </div>
                 <div className={style.info}>
                     <div className={style.static}>
                         <img src="/feed/view.svg" alt="view_count" />
-                        <span>1,569</span>
+                        <span>{data.viewCount}</span>
                     </div>
                     <div className={style.static}>
                         <img src="/feed/like.svg" alt="view_count" />
-                        <span>1,569</span>
+                        <span>{data.likeCount}</span>
                     </div>
                     <div className={style.static}>
                         <img src="/feed/comment.svg" alt="view_count" />
-                        <span>1,569</span>
+                        <span>{data.commentCount}</span>
                     </div>
                 </div>
             </div>

@@ -30,6 +30,7 @@ public class WhisperPreViewDTO extends PostPreViewDTO{
 				//피드 타입 명시
 				.type(FeedType.WHISPER)
 				//생성 날자
+				.viewCount(entity.getViewCount())
 				.createdAt(entity.getCreatedAt())
 				.commentCount(entity.getCommentCount())
 				.likeCount(entity.getLikeCount())

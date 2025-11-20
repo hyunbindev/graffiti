@@ -23,6 +23,7 @@ public class SecretPreViewDTO extends PostPreViewDTO{
 				.createdAt(entity.getCreatedAt())
 				.previewText(preViewText)
 				.commentCount(entity.getCommentCount())
+				.viewCount(entity.getViewCount()) 
 				.likeCount(entity.getLikeCount())
 				.isLiked(isLike)
 				.build();

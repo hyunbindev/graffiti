@@ -53,9 +53,11 @@ public class FeedService {
 		if(lastId==null)
 			lastId = Long.MAX_VALUE;
 		
-		List<FeedBaseEntity> postBaseEntitys = feedBaseRepository.findByDeletedIsFalseAndGroupIdInOrderByIdDesc(groupIds, size, lastId);
+		List<FeedBaseEntity> feedBaseEntitys = feedBaseRepository.findByDeletedIsFalseAndGroupIdInOrderByIdDesc(groupIds, size, lastId);
 		
-		return postBaseEntitys.stream().map((feed)->mappingPreviewDto(feed,userEntity)).toList();
+		
+		
+		return feedBaseEntitys.stream().map((feed)->mappingPreviewDto(feed,userEntity)).toList();
 	}
 	/**
 	 * 게시글 미리보기 DTO 매핑 메서드
@@ -70,7 +72,6 @@ public class FeedService {
 		boolean isLiked = feedLikeRepository.existsByFeedIdAndLikerId(entity.getId(), userEntity.getId());
 		if(entity instanceof WhisperEntity whisper) {
 	        // ⭐️ 방어 로직 적용 (Whisper DTO 매핑 메서드 내부로 이동 권장)
-	        
 	        if(whisper.getImageName() != null) {
 	            String imageUrl = imageService.getPresignedUrl(whisper.getImageName());
 	            return WhisperPreViewDTO.mappingDTO(whisper,userEntity,imageUrl,isLiked);

@@ -36,6 +36,7 @@ public interface FeedBaseRepository extends JpaRepository<FeedBaseEntity,Long> {
 			    se.answer,
 			    se.hint,
 			    COALESCE(se.text, we.text) as text,
+			    COALESCE(se.image_name, we.image_name) AS image_name,
 			    se.image_name,
 			    we.image_name,
 			    we.invisible_mention,
