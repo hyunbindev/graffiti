@@ -9,7 +9,8 @@ export const useAuthStore = create(
       uuid: null,
       nickName: null,
       profileImgeUrl: null,
-
+      groups:null,
+      selectedGroup:null,
       // Set user information
       setUserInfo: (uuid, nickName, profileImgeUrl) =>
         set(() => ({ uuid, nickName, profileImgeUrl })),
@@ -18,6 +19,12 @@ export const useAuthStore = create(
       setToken: (token) =>
         set(() => ({ accessToken: token, isAuthenticated: !!token })),
 
+      setGroups: (groups)=>
+        set(()=> ({groups: groups})),
+      
+      setSelectedGroup: (group)=>
+        set(()=> ({selectedGroup: group})),
+      
       // Clear user information and authentication status
       clearAuth: () =>
         set(() => ({
@@ -26,6 +33,7 @@ export const useAuthStore = create(
           uuid: null,
           nickName: null,
           profileImgeUrl: null,
+          groups:null,
         })),
     }),
     {

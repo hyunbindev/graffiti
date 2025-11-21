@@ -38,4 +38,11 @@ public class MemberController {
 	public ResponseEntity<MemberInfoDTO> getMemberInfo(@PathVariable(name="targetUuid") String targetUuid){
 		return ResponseEntity.ok(memberService.getMemberInfo(targetUuid));
 	}
+	/**
+	 * 소속 그룹 조회
+	 */
+	@GetMapping("/v1/member/group/me")
+	public ResponseEntity<?> getGroups(Authentication auth){
+		return ResponseEntity.ok(memberService.getGroup(auth.getName()));
+	}
 }

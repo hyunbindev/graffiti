@@ -5,6 +5,7 @@ import { useEffect } from "react";
 import { useAuthStore } from '../zustand/useAuthStore'
 import axios from "axios";
 import LoadingComponent from "../component/loading/LoadingComponent";
+import api from '@/lib/api'
 
 export default function AuthenticationCallback() {
     const router = useRouter();
@@ -12,7 +13,8 @@ export default function AuthenticationCallback() {
 
     const setToken = useAuthStore((state) => state.setToken);
     const setUserInfo = useAuthStore((state) => state.setUserInfo);
-
+    const setGroups = useAuthStore((state) => state.setGroups);
+    const setSelectedGroup = useAuthStore((state) => state.setSelectedGroup);
 
     useEffect(()=>{
         const accessToken = searchParams.get("accessToken");
@@ -24,7 +26,13 @@ export default function AuthenticationCallback() {
         }).then((response) => {
             const { uuid, nickName, profileImg } = response.data;
             setUserInfo(uuid, nickName, profileImg);
-            router.push("/");
+
+            api.get(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/member/group/me`)
+            .then((res)=>{
+                setGroups(res.data);
+                setSelectedGroup(res.data[0]);
+            })
+            router.push("/feed");
         }).catch((error) => {
             router.push("/login");
         });

@@ -1,5 +1,6 @@
 package com.hyunbindev.graffiti.service.member;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
@@ -8,7 +9,9 @@ import org.springframework.transaction.annotation.Transactional;
 import com.hyunbindev.graffiti.config.oauth.KakaoOauth2User;
 import com.hyunbindev.graffiti.constant.Role;
 import com.hyunbindev.graffiti.constant.exception.MemberExceptionConst;
+import com.hyunbindev.graffiti.data.member.JoinGroupsDTO;
 import com.hyunbindev.graffiti.data.member.MemberInfoDTO;
+import com.hyunbindev.graffiti.entity.jpa.group.GroupEntity;
 import com.hyunbindev.graffiti.entity.jpa.member.MemberEntity;
 import com.hyunbindev.graffiti.exception.CommonAPIException;
 import com.hyunbindev.graffiti.repository.jpa.MemberRepository;
@@ -21,7 +24,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class MemberService {
 	private final MemberRepository memberRepository;
-	
 	/**
 	 * 회원 여부 인증 절차
 	 * @author hyunbinDev
@@ -62,5 +64,19 @@ public class MemberService {
 				.orElseThrow(()-> new CommonAPIException(MemberExceptionConst.NOT_FOUND));
 		
 		return new MemberInfoDTO(member);
+	}
+	/**
+	 * 소속 그룹 조회
+	 * @param userUuid
+	 * @return
+	 */
+	public List<JoinGroupsDTO> getGroup(String userUuid){
+		MemberEntity member = memberRepository.findById(userUuid)
+				.orElseThrow(()-> new CommonAPIException(MemberExceptionConst.NOT_FOUND));
+		
+		List<GroupEntity> groups = member.getGroupLinks().stream()
+				.map((link)->link.getGroup())
+				.toList(); 
+		return groups.stream().map((entity)-> JoinGroupsDTO.mappingDTO(entity)).toList();
 	}
 }

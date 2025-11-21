@@ -1,0 +1,35 @@
+div.groupElement{
+    padding: 0.5rem;
+    display: flex;
+    justify-content: space-between;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1.2rem;
+}
+.groupElement button.invite{
+    display: flex;
+    align-items: center;
+    background-color: rgb(97, 185, 116);
+    padding: 0.2rem 1rem;
+    border: none;
+    outline: none;
+    border-radius: 5px;
+    color: white;
+    margin-left: 0.5rem;
+}
+
+.groupElement button.run{
+    display: flex;
+    align-items: center;
+    background-color: rgb(224, 77, 77);
+    padding: 0.2rem 1rem;
+    border: none;
+    outline: none;
+    border-radius: 5px;
+    color: white;
+    margin-left: 0.5rem;
+}
+.groupContainer{
+    display: flex;
+
+}

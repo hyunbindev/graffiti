@@ -59,6 +59,7 @@ public class WhisperController {
 		return ResponseEntity.accepted().build();
 	}
 	/**
+	 * 
 	 * whisper feed 조회
 	 * @param auth
 	 * @param feedId
