@@ -175,13 +175,15 @@ public class WhisperService {
 		//덧글 수 집계
 		long commentCount = whisper.getCommentCount()+feedCommentCountService.getCommentCount(feedId);
 		
+		boolean isLiked = feedLikeService.isLiked(feedId, userUuid);
+		
 		//이미지 존재시
 		if(whisper.getImageName() != null) {
 			String imageUrl = imageService.getPresignedUrl(whisper.getImageName());
-			return WhisperDTO.mappingDTOWithImage(whisper,viewCount,likeCount,commentCount,imageUrl);
+			return WhisperDTO.mappingDTOWithImage(whisper,viewCount,likeCount,commentCount,imageUrl,isLiked);
 		}
 		
-		return  WhisperDTO.mappingDTO(whisper,viewCount,likeCount,commentCount);
+		return  WhisperDTO.mappingDTO(whisper,viewCount,likeCount,commentCount,isLiked);
 	}
 	/**
 	 * Whisper 게시글 소프트 삭제 처리

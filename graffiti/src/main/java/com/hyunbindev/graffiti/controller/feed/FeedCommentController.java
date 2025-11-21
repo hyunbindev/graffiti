@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.hyunbindev.graffiti.data.feed.FeedCommentDTO;
@@ -58,7 +59,8 @@ public class FeedCommentController {
 	 * @return
 	 */
 	@GetMapping("/{feedId}/comment")
-	public ResponseEntity<List<FeedCommentDTO>> getFeedComment(Authentication auth, @PathVariable("feedId")Long feedId){
-		return ResponseEntity.ok(feedCommentService.getWhisperComments(auth.getName(), feedId));
+	public ResponseEntity<List<FeedCommentDTO>> getFeedComment(Authentication auth, @PathVariable("feedId")Long feedId, @RequestParam(name="lastId",required=false)Long lastId, @RequestParam("size")Integer size){
+		if(lastId==null) lastId = Long.MAX_VALUE;
+		return ResponseEntity.ok(feedCommentService.getWhisperComments(auth.getName(), feedId, lastId,size));
 	}
 }

@@ -89,7 +89,7 @@ public class FeedCommentService {
 	 * @return
 	 */
 	@Transactional(readOnly=true)
-	public List<FeedCommentDTO> getWhisperComments(String userUuid, Long whisperId) {
+	public List<FeedCommentDTO> getWhisperComments(String userUuid, Long whisperId, Long lastId, Integer size) {
 		MemberEntity user = memberRepository.findById(userUuid)
 				.orElseThrow(()-> new CommonAPIException(MemberExceptionConst.NOT_FOUND));
 		
@@ -105,8 +105,10 @@ public class FeedCommentService {
 			if(whisper.isInvisibleMention() && whisper.getMentionMembers().contains(user))
 				throw new CommonAPIException(WhisperExceptionConst.FORBIDDEN);	
 		}
+		
+		
 		//Dto mapping 후 리턴
-		return feedCommentRepository.findCommentsByFeedWithAuthor(feed).stream()
+		return feedCommentRepository.findCommentsByFeedWithAuthor(feed.getId(),lastId,size).stream()
 				.map((entity)->FeedCommentDTO.mappingDTO(entity))
 				.toList();
 	}

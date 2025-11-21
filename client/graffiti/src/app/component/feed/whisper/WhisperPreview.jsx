@@ -1,10 +1,12 @@
 "use client";
+import Link from 'next/link';
 import style from './WhisperPreview.module.css'
 
 export default function WhisperPreview({whisper}){
 
 
     return (
+        <Link href={`feed/${whisper.id}`} className={style.whisperLink}> 
         <div className={style.whisperPreviewContainer}>
             {whisper.imageUrl && <img  src={whisper.imageUrl} alt="image"/>}
             <div>{whisper.previewText}</div>
@@ -19,5 +21,6 @@ export default function WhisperPreview({whisper}){
             }
             </div>}
         </div>
+        </Link>
     );
 }

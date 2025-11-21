@@ -18,7 +18,7 @@ export default function AuthenticationCallback() {
         const accessToken = searchParams.get("accessToken");
         setToken(accessToken);
         console.log("Access Token set:", accessToken);
-        axios.get("/api/v1/member/me",{
+        axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/member/me`,{
             headers: {
                 Authorization: `${accessToken}`,},withCredentials: true
         }).then((response) => {

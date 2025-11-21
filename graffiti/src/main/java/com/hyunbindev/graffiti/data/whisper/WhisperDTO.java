@@ -25,6 +25,7 @@ public class WhisperDTO {
 	private Long viewCount;
 	private Long commentCount;
 	private Long likeCount;
+	private Boolean isLiked;
 	private boolean blinded;
 	private String imageUrl;
 	
@@ -33,7 +34,7 @@ public class WhisperDTO {
 	 * @param entity
 	 * @return
 	 */
-	public static WhisperDTO mappingDTO(WhisperEntity entity, long viewCount, long likeCount, long commentCount) {
+	public static WhisperDTO mappingDTO(WhisperEntity entity, long viewCount, long likeCount, long commentCount, boolean isLiked) {
 		return WhisperDTO.builder()
 				.id(entity.getId())
 				.author(new MemberInfoDTO(entity.getAuthor()))
@@ -42,11 +43,12 @@ public class WhisperDTO {
 				//캐싱된 조회수 및 저장된 조회수 합산
 				.viewCount(viewCount + entity.getViewCount())
 				.likeCount(likeCount)
+				.isLiked(isLiked)
 				.commentCount(commentCount)
 				.text(entity.getText())
 				.build();
 	}
-	public static WhisperDTO mappingDTOWithImage(WhisperEntity entity, long viewCount, long likeCount, long commentCount ,String imageUrl) {
+	public static WhisperDTO mappingDTOWithImage(WhisperEntity entity, long viewCount, long likeCount, long commentCount ,String imageUrl, boolean isLiked) {
 		return WhisperDTO.builder()
 				.id(entity.getId())
 				.author(new MemberInfoDTO(entity.getAuthor()))
@@ -55,6 +57,7 @@ public class WhisperDTO {
 				//캐싱된 조회수 및 저장된 조회수 합산
 				.viewCount(viewCount + entity.getViewCount())
 				.likeCount(likeCount)
+				.isLiked(isLiked)
 				.commentCount(commentCount)
 				.text(entity.getText())
 				.imageUrl(imageUrl)

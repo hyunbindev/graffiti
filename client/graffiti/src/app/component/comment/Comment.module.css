@@ -1,0 +1,37 @@
+div.commentContainer{
+    position:relative;
+    margin-top: 1rem;
+    border-bottom: 1px solid #e0e0e0;
+}
+.commentContainer div.header{
+    display: flex;
+    align-items: center;
+}
+
+.commentContainer div.authorProfile{
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.1rem;
+    margin-right: 0.5rem;
+}
+
+.commentContainer div.authorProfile img{
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+}
+.commentContainer div.createdAt{
+    color: gray;
+    font-size: smaller;
+}
+.commentContainer div.text{
+    padding: 0.5rem 0rem 0.5rem 3rem;
+    line-height: 1.5;
+}
+div.delete{
+    display: flex;
+    position: absolute;
+    right: 1rem;
+    top:0.5rem;
+}
