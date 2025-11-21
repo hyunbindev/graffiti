@@ -1,7 +1,10 @@
 {
   "compilerOptions": {
+    "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
+      // This maps the '@/...' prefix to the 'src/...' directory
+      // The Next.js convention is often to map it directly to the root, but if your components are in /src, use this:
+      "@/*": ["./src/app/*"] 
     }
   }
 }

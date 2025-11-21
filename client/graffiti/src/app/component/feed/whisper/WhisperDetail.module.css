@@ -1,0 +1,46 @@
+div.detailContainer{
+    margin-top: 3rem;
+    padding: 1rem;
+    background-color: white;
+}
+
+div.header{
+    display: flex;
+    justify-content: space-between;
+}
+
+div.authorProfile{
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.authorProfile img{
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+}
+
+.header div.createdAt{
+    color: gray;
+}
+
+div.info{
+    padding-top: 1rem;;
+    display: flex;
+    align-items: center;
+}
+
+.info div.static{
+    display: flex;
+    align-items: center;
+    margin-right: 1rem;
+    font-size: smaller;
+    color: rgb(85, 85, 85);
+}
+.info div.static img{
+    width: 1.5rem;
+    height: 1.5rem;
+    margin-right: 0.25rem;
+}

@@ -1,8 +1,8 @@
 "use client";
-import MenuComponent from "./component/menu/MenuComponent";
-import HeaderComponent from "./component/header/HeaderComponent";
-import FeedPreView from "./component/feed/FeedPreView";
-import useRecentFeed from "./viewmodel/useRecentFeed";
+import MenuComponent from "@/component/menu/MenuComponent";
+import HeaderComponent from "@/component/header/HeaderComponent";
+import FeedPreView from "@/component/feed/FeedPreView";
+import useRecentFeed from "@/viewmodel/useRecentFeed";
 import { useInView } from 'react-intersection-observer';
 import { useEffect } from "react";
 
