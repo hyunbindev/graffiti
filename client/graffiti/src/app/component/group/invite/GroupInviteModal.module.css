@@ -1,0 +1,22 @@
+h3.title{
+    margin-bottom: 1rem;
+}
+
+div.code{
+    display: flex;
+    justify-content: center;
+    padding: 1rem 0rem;
+    font-size: large;
+    font-weight: bold;
+    margin: 2rem 0;
+}
+
+div.buttonGroup{
+    display: flex;
+    justify-content: space-between;
+}
+.buttonGroup button{
+    font-size: 1rem;
+    width: 7rem;
+    padding: 0.2rem 0rem;
+}

@@ -38,14 +38,12 @@ public class WhisperController {
 	 * @return
 	 */
 	@PostMapping
-	public ResponseEntity<Void> createWhisperFeed(Authentication auth, @RequestPart("feed") @Valid WhisperCreateDTO createDto,@RequestPart(value="image", required=false)MultipartFile image){
+	public ResponseEntity<Long> createWhisperFeed(Authentication auth, @RequestPart("feed") @Valid WhisperCreateDTO createDto,@RequestPart(value="image", required=false)MultipartFile image){
 		if(image!= null && 10 < image.getSize()) {
 			String imageName = imageService.saveImage(FeedType.WHISPER.getFeedType()+"-"+UUID.randomUUID().toString(),image);
-			whisperService.createWhisperFeedWithImage(auth.getName(), createDto, imageName);
-		}else {
-			whisperService.createWhisperFeed(auth.getName(), createDto);
+			return ResponseEntity.status(HttpStatus.CREATED).body(whisperService.createWhisperFeedWithImage(auth.getName(), createDto, imageName));
 		}
-		return ResponseEntity.status(HttpStatus.CREATED).build();
+		return ResponseEntity.status(HttpStatus.CREATED).body(whisperService.createWhisperFeed(auth.getName(), createDto));
 	}
 	/**
 	 * whisper feed 삭제

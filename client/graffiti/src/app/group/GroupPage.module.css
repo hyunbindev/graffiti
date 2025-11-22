@@ -2,3 +2,21 @@ div.groupPageContainer{
     background-color: white;
     padding:1rem;
 }
+
+button.joinGroup{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    font-size: larger;
+    border: none;
+    padding: 0.5rem 0;
+    border-radius: 5px;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    background-color: rgb(115, 185, 115);
+    color: white;
+}
+button.joinGroup img{
+    margin-right: 1rem;
+}

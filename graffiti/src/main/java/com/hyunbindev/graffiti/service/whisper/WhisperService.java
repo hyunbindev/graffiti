@@ -53,7 +53,7 @@ public class WhisperService {
 	 * @param createDto
 	 */
 	@Transactional
-	public void createWhisperFeed(String userUuid ,WhisperCreateDTO createDto) {
+	public Long createWhisperFeed(String userUuid ,WhisperCreateDTO createDto) {
 		MemberEntity author = memberRepository.findById(userUuid)
 				.orElseThrow(()-> new CommonAPIException(MemberExceptionConst.UNAUTHORIZED));
 		
@@ -87,7 +87,7 @@ public class WhisperService {
 		if(createDto.isInvisibleMention()) {
 			whisperEntityBuilder.invisibleMention(true);
 		}
-		whisperRepository.save(whisperEntityBuilder.build());
+		return whisperRepository.save(whisperEntityBuilder.build()).getId();
 	}
 	/**
 	 * 이미지와 함께 저장
@@ -96,7 +96,7 @@ public class WhisperService {
 	 * @param imageName
 	 */
 	@Transactional
-	public void createWhisperFeedWithImage(String userUuid ,WhisperCreateDTO createDto, String imageName) {
+	public Long createWhisperFeedWithImage(String userUuid ,WhisperCreateDTO createDto, String imageName) {
 		MemberEntity author = memberRepository.findById(userUuid)
 				.orElseThrow(()-> new CommonAPIException(MemberExceptionConst.UNAUTHORIZED));
 		
@@ -133,7 +133,7 @@ public class WhisperService {
 		eventPublisher.publishEvent(new WhisperFeedRollBackEvent(imageName));
 		
 		
-		whisperRepository.save(whisperEntityBuilder.build());
+		return whisperRepository.save(whisperEntityBuilder.build()).getId();
 	}
 	/**
 	 * 게시글 Transaction 실패시 이미지 삭제

@@ -19,3 +19,26 @@ export const deleteWhisperFeed = async (feedId)=>{
         console.error
     }
 }
+
+export const createWhiperFeed = async (groupUuid, image, text)=>{
+    const request ={
+        "text":text,
+        "groupUuid":groupUuid,
+        "mentionMembers":[]
+    }
+    const formData = new FormData();
+    if(image){
+        const fileType = image.type;
+        const imageBlob = new Blob([image], { type: fileType });
+        formData.append("image",imageBlob, image.name);
+    }
+    const requestBlob = new Blob([JSON.stringify(request)], { type: 'application/json' });
+    formData.append("feed", requestBlob);
+    try{
+        const res = await api.post(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/whisper`,formData);
+        return res.data;
+    }catch(e){
+        console.error(e);
+        throw e;
+    }
+}

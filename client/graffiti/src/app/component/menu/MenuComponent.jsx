@@ -15,9 +15,11 @@ export default function MenuComponent() {
                     <img src={'/menu/rocket.svg'}></img>
                 </div>
             </Link>
-            <div id={style.add} className={style.menuItem}>
-                <img src={'/menu/add.svg'}></img>
-            </div>
+            <Link href="/create">
+                <div id={style.add} className={style.menuItem}>
+                    <img src={'/menu/add.svg'}></img>
+                </div>
+            </Link>
             <Link href="/group">
                 <div className={style.menuItem}>
                     <img src={'/menu/group.svg'}></img>

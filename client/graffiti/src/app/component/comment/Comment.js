@@ -40,7 +40,7 @@ const deleteComment = async()=>{
             </div>
             <div className={style.createdAt}>{getTimeConvert(comment.createdAt)}</div>
         </div>
-        <div className={style.text}>
+        <div className={style.text} style={{"whiteSpace":"pre"}}>
             {comment.text} 
         </div>
     </div>);

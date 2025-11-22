@@ -12,9 +12,12 @@ import com.hyunbindev.graffiti.constant.exception.MemberExceptionConst;
 import com.hyunbindev.graffiti.data.member.JoinGroupsDTO;
 import com.hyunbindev.graffiti.data.member.MemberInfoDTO;
 import com.hyunbindev.graffiti.entity.jpa.group.GroupEntity;
+import com.hyunbindev.graffiti.entity.jpa.group.MemberGroupLinkedEntity;
 import com.hyunbindev.graffiti.entity.jpa.member.MemberEntity;
 import com.hyunbindev.graffiti.exception.CommonAPIException;
 import com.hyunbindev.graffiti.repository.jpa.MemberRepository;
+import com.hyunbindev.graffiti.repository.jpa.group.GroupRepository;
+import com.hyunbindev.graffiti.repository.jpa.group.MemberGroupLinkedRepository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +27,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class MemberService {
 	private final MemberRepository memberRepository;
+	private final GroupRepository groupRepository;
+	private final MemberGroupLinkedRepository memberGroupLinkedRepository;
 	/**
 	 * 회원 여부 인증 절차
 	 * @author hyunbinDev
@@ -78,5 +83,30 @@ public class MemberService {
 				.map((link)->link.getGroup())
 				.toList(); 
 		return groups.stream().map((entity)-> JoinGroupsDTO.mappingDTO(entity)).toList();
+	}
+	/**
+	 * 소속 그룹 멤버 조회
+	 * @param userUuid
+	 * @param groupId
+	 * @return
+	 */
+	public List<MemberInfoDTO> getMembersIngroup(String userUuid, String groupId, String keyWord){
+		MemberEntity member = memberRepository.findById(userUuid)
+				.orElseThrow(()->new CommonAPIException(MemberExceptionConst.NOT_FOUND));
+		
+		GroupEntity group = groupRepository.findById(groupId)
+				.orElseThrow(()-> new CommonAPIException(MemberExceptionConst.UNAUTHORIZED));
+		
+		if(keyWord!=null)
+			keyWord = "%"+keyWord+"%";
+		
+		if(!member.isInGroup(group))
+			throw new CommonAPIException(MemberExceptionConst.UNAUTHORIZED);
+		
+		List<MemberGroupLinkedEntity> membersIngroup = memberGroupLinkedRepository.findByGroupFetchJoin(group, keyWord);
+		
+		return membersIngroup.stream()
+				.map((gl)->new MemberInfoDTO(gl.getMember()))
+				.toList();
 	}
 }

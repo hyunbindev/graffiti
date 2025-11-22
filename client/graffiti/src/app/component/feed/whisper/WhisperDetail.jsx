@@ -72,7 +72,7 @@ const deleteFeed= async()=>{
                     />}
                 </div>
             }
-            <div className={style.content}>
+            <div className={style.content} style={{"whiteSpace":"pre"}}>
                 {feed && feed?.text}
             </div>
             {feed.metionMembers.length > 0 &&<div className={style.mentionContainer}>
