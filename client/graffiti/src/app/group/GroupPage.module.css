@@ -20,3 +20,17 @@ button.joinGroup{
 button.joinGroup img{
     margin-right: 1rem;
 }
+
+button.newgroup{
+    margin-top: 1rem;
+    padding: 0.5rem 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: large;
+    border: none;
+    width: 100%;
+    background-color: rgb(85, 106, 175);
+    color: white;
+    border-radius: 5px;
+}

@@ -1,4 +1,5 @@
-"use client"
+"use client";
+import Link from 'next/link';
 import style from './GroupPage.module.css'
 import GroupElement from '@/component/group/GroupElement'
 import { useAuthStore } from '@/zustand/useAuthStore.js';
@@ -20,9 +21,12 @@ export default function GroupPage(){
                 groups.map((group,idx)=>(<GroupElement key={idx} group={group} setSelectedGroup={setSelectedGroup}/>))
             }
         </div>
-        <button>
+        <Link href="/group/create">
+        <button className={style.newgroup}>
+            <img src="/group/newgroup.svg"/>
             그룹 만들기
         </button>
+        </Link>
     </div>
     {selectedGroup && <GroupInviteModal selectedGroup={selectedGroup} setSelectedGroup={setSelectedGroup} />}
     </>

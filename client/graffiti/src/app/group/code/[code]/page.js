@@ -3,7 +3,7 @@
 import style from './InviteCodePage.module.css';
 import { useParams } from 'next/navigation';
 
-import useGroupJoin from '@/viewmodel/useGroupJoin';
+import useGroupJoin from '@/viewmodel/group/useGroupJoin';
 
 export default function InviteCodePage(){
     const params = useParams();

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { getGroupNameByCode , joinGroupByCode } from '@/model/GroupModel';
 import {  useRouter } from 'next/navigation';
-import { useAuthStore } from '../zustand/useAuthStore'
+import { useAuthStore } from '../../zustand/useAuthStore'
 import api from '@/lib/api'
 const useGroupJoin = ({code}) => {
     const [groupName, setGroupName] = useState(null);

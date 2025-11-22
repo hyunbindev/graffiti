@@ -2,7 +2,7 @@ import Box from '@mui/material/Box';
 import Modal from '@mui/material/Modal';
 import * as React from 'react';
 
-import useGroupInvite from '@/viewmodel/useGroupInvite';
+import useGroupInvite from '@/viewmodel/group/useGroupInvite';
 
 
 import { useEffect } from 'react';

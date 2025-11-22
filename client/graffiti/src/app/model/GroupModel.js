@@ -41,3 +41,14 @@ export const getMemberInGroup = async(groupUuid, keyWord)=>{
         throw error;
     }
 }
+
+export const postNewGroup = async (groupName)=>{
+    try{
+        const res = await api.post(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/group`,{
+            "groupName":groupName,
+        });
+        return res.data;
+    }catch(error){
+        throw error;
+    }
+}
