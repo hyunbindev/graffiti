@@ -3,6 +3,7 @@ import { useAuthStore } from '../../zustand/useAuthStore.js';
 import style from './FeedPreView.module.css'
 import WhisperPreview from '../feed/whisper/WhisperPreview.jsx';
 import {getTimeConvert} from '../../util/dateConvert.js';
+import BlinedFeed from '@/component/feed/BlinedFeed.js'
 export default function FeedPreView({data}) {
     const { nickName, profileImgeUrl } = useAuthStore();
 
@@ -13,6 +14,10 @@ export default function FeedPreView({data}) {
             case "SECRET":
                 return <p>secret</p>
         }
+    }
+
+    if(data.isBlinded){
+        return (<BlinedFeed/>)
     }
 
     return (

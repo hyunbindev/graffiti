@@ -56,3 +56,17 @@ div.imageContainer{
 img#delete{
     width: 25px;
 }
+
+div.mentionsContainer{
+    background-color: white;
+    padding: 0.5rem;
+    margin: 0.5rem 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+
+}
+.mentionsContainer div.list{
+    display: flex;
+    overflow-x: auto;
+    white-space: nowrap;
+}

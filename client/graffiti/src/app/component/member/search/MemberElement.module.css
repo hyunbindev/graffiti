@@ -1,0 +1,11 @@
+.elementContainer{
+    padding:0.5rem;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+.elementContainer img{
+    width: 2rem;
+    border-radius: 50%;
+    margin-right: 0.5rem;
+}

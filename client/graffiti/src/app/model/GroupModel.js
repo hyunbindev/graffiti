@@ -21,10 +21,20 @@ export const getGroupNameByCode = async(code)=>{
 }
 
 export const joinGroupByCode = async(code)=>{
-    console.log(code);
     try{
         const res = await api.post(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/group/join`,{
             "code":code,
+        });
+        return res.data;
+    }catch(error){
+        throw error;
+    }
+}
+
+export const getMemberInGroup = async(groupUuid, keyWord)=>{
+    try{
+        const res = await api.get(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/group/${groupUuid}/member`,{
+            params:{keyWord:keyWord}
         });
         return res.data;
     }catch(error){

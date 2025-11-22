@@ -12,7 +12,8 @@ export default function FeedDetailPage() {
     if (!feed) {
         return <FeedSkeleton />; 
     }
+    
     return (
         <WhisperDetail feed={feed} />
-    );
+    )
 }

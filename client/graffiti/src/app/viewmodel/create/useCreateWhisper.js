@@ -9,13 +9,14 @@ const useCreateWhisper = () => {
     const router = useRouter();
     const [text,setText] =useState("");
     const { selectedGroup} = useAuthStore();
-    const createFeed = async (image)=>{
+    const createFeed = async (image, mentions,invisibleMention)=>{
+        const mentionUuids = mentions.map(member => member.uuid);
         try{
             if(text.trim().length<1){
                 alert("글을 입려해 주세요")
                 return;
             }
-            const res = await createWhiperFeed(selectedGroup.uuid,image,text);
+            const res = await createWhiperFeed(selectedGroup.uuid,image,text,mentionUuids,invisibleMention);
             router.push(`/feed/${res}`);
         }catch(err){
             alert(err);

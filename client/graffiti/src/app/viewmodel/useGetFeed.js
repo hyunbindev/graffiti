@@ -10,6 +10,7 @@ const useGetFeed = (feedId) => {
         try {
             const data = await getWhisperFeed(feedId);
             setFeed(data);
+            console.log(data);
         } catch (error) {
             console.error("Error fetching whisper feed:", error);
         }

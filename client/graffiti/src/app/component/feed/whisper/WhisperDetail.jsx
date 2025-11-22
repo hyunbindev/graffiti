@@ -72,13 +72,14 @@ const deleteFeed= async()=>{
                     />}
                 </div>
             }
-            <div className={style.content} style={{"whiteSpace":"pre"}}>
+            <div className={style.content} style={{"whiteSpace":"pre-wrap"}}>
                 {feed && feed?.text}
             </div>
             {feed.metionMembers.length > 0 &&<div className={style.mentionContainer}>
                 {
                 feed.metionMembers.map((member)=>(
                     <div key={member.uuid} className={style.mentionMember}>
+                        <img src={"/feed/tag.svg"}/>
                         <img src={member.profileImg} alt="profile"/>
                         <span>{member.nickName}</span>
                     </div>

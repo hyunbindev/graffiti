@@ -20,11 +20,12 @@ export const deleteWhisperFeed = async (feedId)=>{
     }
 }
 
-export const createWhiperFeed = async (groupUuid, image, text)=>{
+export const createWhiperFeed = async (groupUuid, image, text, mentions,invisibleMention)=>{
     const request ={
         "text":text,
         "groupUuid":groupUuid,
-        "mentionMembers":[]
+        "mentionMembers":mentions,
+        "invisibleMention":invisibleMention
     }
     const formData = new FormData();
     if(image){

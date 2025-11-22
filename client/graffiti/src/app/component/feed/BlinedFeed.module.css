@@ -1,0 +1,50 @@
+.skeleton-circle {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #e2e2e2;
+    animation: skeleton-loading 1.2s infinite alternate;
+}
+
+.skeleton-text {
+    height: 10px;
+    background: #e2e2e2;
+    border-radius: 4px;
+    animation: skeleton-loading 1.2s infinite alternate;
+}
+
+.skeleton-text.short { width: 80px; }
+.skeleton-text.medium { width: 120px; margin-top: 6px; }
+.skeleton-text.long { width: 100%; margin-top: 6px; }
+.skeleton-text.tiny { width: 30px; }
+
+.skeleton-icon {
+    width: 20px;
+    height: 20px;
+    background: #e2e2e2;
+    border-radius: 4px;
+    animation: skeleton-loading 1.2s infinite alternate;
+}
+
+/* Skeleton animation */
+@keyframes skeleton-loading {
+    0% { background-color: #e2e2e2; }
+    100% { background-color: #f5f5f5; }
+}
+.feedPreviewContainer{
+    padding: 0.3rem;
+    position: relative;
+}
+.feedPreview{
+    background-color: white;
+    padding:0.5rem;
+    border-radius: 5px;
+}
+
+.blindMessage{
+    font-size: larger;
+    position: absolute;
+    top: 50%;       /* 부모 중앙에서 시작 */
+    left: 50%;
+    transform: translate(-50%, -50%); /* 요소 너비/높이의 50%만큼 다시 이동하여 보정 */
+}
