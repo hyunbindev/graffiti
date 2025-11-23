@@ -1,5 +1,5 @@
 "use client";
-import { getRecentFeeds } from "../model/FeedModel";
+import { getRankFeed } from "../model/FeedModel";
 import { useEffect, useState, useCallback } from "react";
 import { useAuthStore } from '@/zustand/useAuthStore.js';
 
@@ -21,7 +21,7 @@ const useRecentFeed = (size = 10) => {
         setIsLoading(true);
         
         try {
-            const data = await getRecentFeeds(cursorId, size, selectedGroupId);
+            const data = await getRankFeed(cursorId, size, selectedGroupId);
             
             const newHasNext = data.length === size;
             const newLastId = data.length > 0 ? data[data.length - 1].id : null;
@@ -38,8 +38,10 @@ const useRecentFeed = (size = 10) => {
         } finally {
             setIsLoading(false);
         }
+
     }, [size, hasNext, isLoading, selectedGroupId]); 
 
+    //         그룹 ID가 유효한 값으로 처음 설정될 때 (첫 로드) 실행됩니다.
     useEffect(() => {
         if (selectedGroupId) {
             // 1. 상태 초기화
@@ -51,6 +53,7 @@ const useRecentFeed = (size = 10) => {
             fetchFeeds(null); 
         }
         
+
     }, [selectedGroupId]); 
 
     // 다음 페이지를 로드하는 함수

@@ -44,6 +44,14 @@ export const createWhiperFeed = async (groupUuid, image, text, mentions,invisibl
     }
 }
 
-export const getRankFeed=()=>{
-    
+export const getRankFeed=async(lastId, size ,groupUuid)=>{
+    try{
+        const res = await api.get(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/feed`,{
+            params: {lastId: lastId, size: size, groupId: groupUuid}
+        });
+        return res.data;
+    }catch(error){
+        console.error("Error fetching recent feeds:", error);
+        return [];
+    }
 }
