@@ -14,7 +14,7 @@ export default function GroupPage(){
     return(
     <>
     <div className={style.groupPageContainer}>
-        <button className={style.joinGroup}><img src={'/group/join.svg'}/>그룹 참여하기</button>
+        {/** <button className={style.joinGroup}><img src={'/group/join.svg'}/>그룹 참여하기</button>*/}
         <h2 style={{"marginBottom":"0.5rem"}}>그룹 관리</h2>
         <div className={style.groupContainer}>
             {

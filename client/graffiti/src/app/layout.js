@@ -1,6 +1,7 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-
+import KakaoScript from "./share/KakaoScript";
+import Redirect from '@/lib/Redirect'
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -22,6 +23,8 @@ export default function RootLayout({ children }) {
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
         {children}
       </body>
+      <KakaoScript/>
+      <Redirect/>
     </html>
   );
 }

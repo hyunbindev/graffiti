@@ -91,4 +91,8 @@ public class JwtTokenProvider {
 	public long getRefreshValidity() {
 		return this.refreshValidity;
 	}
+	
+	public long getAccessTokenValiditiy() {
+		return this.accessValidity;
+	}
 }

@@ -26,11 +26,11 @@ export default function HeaderComponent() {
                 },
             }}
             >
-            <Select value={selectedGroup?.uuid ?? ""}>
+            {groups && <Select value={selectedGroup?.uuid ?? ""}>
                 {
                     groups.map((value)=>(<MenuItem onClick={()=>selectedGroupChange(value)} key={value.uuid} value={value.uuid}>{value.name}</MenuItem>))
                 }
-            </Select>
+            </Select>}
         </FormControl>
             <div id={style.profile}>
                 <img src={profileImgeUrl} alt="profile" />

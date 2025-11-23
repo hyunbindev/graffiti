@@ -6,6 +6,7 @@ import { useAuthStore } from '../zustand/useAuthStore'
 import axios from "axios";
 import LoadingComponent from "../component/loading/LoadingComponent";
 import api from '@/lib/api'
+import { red } from "@mui/material/colors";
 
 export default function AuthenticationCallback() {
     const router = useRouter();
@@ -19,7 +20,6 @@ export default function AuthenticationCallback() {
     useEffect(()=>{
         const accessToken = searchParams.get("accessToken");
         setToken(accessToken);
-        console.log("Access Token set:", accessToken);
         axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/member/me`,{
             headers: {
                 Authorization: `${accessToken}`,},withCredentials: true
@@ -32,8 +32,15 @@ export default function AuthenticationCallback() {
                 setGroups(res.data);
                 setSelectedGroup(res.data[0]);
             })
-            router.push("/feed");
+            const redirect = sessionStorage.getItem("redirect");
+            if(!redirect){
+                return router.push("/feed");
+            }
+            sessionStorage.removeItem("redirect");
+            router.push(redirect);
+
         }).catch((error) => {
+            console.error(error);
             router.push("/login");
         });
     },[]);

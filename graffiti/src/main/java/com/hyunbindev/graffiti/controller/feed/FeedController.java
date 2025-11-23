@@ -31,8 +31,8 @@ public class FeedController {
 	 * @return
 	 */
 	@GetMapping
-	public ResponseEntity<List<PostPreViewDTO>> getRecentPreviewPage(Authentication auth,@RequestParam(name="lastId", required=false) Long lastId, @RequestParam(name="size") int size){
-		return ResponseEntity.ok(feedService.getRecentPostPreviewWithPage(auth.getName(), lastId, size));
+	public ResponseEntity<List<PostPreViewDTO>> getRecentPreviewPage(Authentication auth,@RequestParam(name="lastId", required=false) Long lastId, @RequestParam(name="size") int size, @RequestParam(name="groupId")String groupId){
+		return ResponseEntity.ok(feedService.getRecentPostPreviewWithPage(auth.getName(), lastId, size,groupId));
 	}
 	
 	/**

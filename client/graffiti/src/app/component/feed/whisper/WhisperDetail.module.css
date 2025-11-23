@@ -27,6 +27,7 @@ div.authorProfile{
 }
 
 div.info{
+    position: relative;
     padding-top: 1rem;;
     display: flex;
     align-items: center;
@@ -81,4 +82,8 @@ div.mentionMember{
 
 .mentionContainer span{
     color: black;
+}
+#share{
+    position: absolute;
+    right: 0rem;
 }

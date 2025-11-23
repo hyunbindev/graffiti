@@ -29,6 +29,8 @@ public class WhisperDTO {
 	private boolean blinded;
 	private String imageUrl;
 	
+	private boolean isMentionInvisible;
+	
 	/**
 	 * DTO 매핑
 	 * @param entity
@@ -46,6 +48,7 @@ public class WhisperDTO {
 				.isLiked(isLiked)
 				.commentCount(commentCount)
 				.text(entity.getText())
+				.isMentionInvisible(entity.isInvisibleMention())
 				.build();
 	}
 	public static WhisperDTO mappingDTOWithImage(WhisperEntity entity, long viewCount, long likeCount, long commentCount ,String imageUrl, boolean isLiked) {
@@ -60,6 +63,7 @@ public class WhisperDTO {
 				.isLiked(isLiked)
 				.commentCount(commentCount)
 				.text(entity.getText())
+				.isMentionInvisible(entity.isInvisibleMention())
 				.imageUrl(imageUrl)
 				.build();
 	}

@@ -6,17 +6,21 @@ import useCreateWhisper from '@/viewmodel/create/useCreateWhisper';
 import useImage from '@/viewmodel/create/useImage'
 
 import SearchMember from '@/component/member/search/SearchMember'
-
+import { useAuthStore } from '@/zustand/useAuthStore.js';
 import {useState,useEffect} from 'react';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import MemberElement from '@/component/member/search/MemberElement';
 import Checkbox from '@mui/material/Checkbox';
+import LoadingModal from '@/component/loading/LodadingModalComponent';
+
 export default function CreatePage(){
+    const { selectedGroup } = useAuthStore();
     const {image, uploadImage ,imageUrl ,removeImage}= useImage();
     const { text ,createFeed ,setText } = useCreateWhisper();
     const [mentions , setMentions] = useState([]);
     const [visibleModal, setVisibleModal] = useState(false);
     const [invisibleMention, setinvisibleMention] = useState(false);
+    const [visibleLoading, setVisibleLoading] = useState(false);
     const mentionAdd = (member) => {
         setMentions((prev) => {
             const isDuplicate = prev.some(existingMember => existingMember.uuid === member.uuid);
@@ -36,6 +40,9 @@ export default function CreatePage(){
             return prev.filter(existingMember => existingMember.uuid !== member.uuid);
         });
     };
+    useEffect(()=>{
+        setMentions([]);
+    },[selectedGroup]);
 
     return (
         <>
@@ -89,7 +96,7 @@ export default function CreatePage(){
                     <img src={"/create/mention.svg"}/>
                     언급
                 </label>
-                <label className={style.button} onClick={()=>createFeed(image,mentions,invisibleMention)}>
+                <label className={style.button} onClick={()=>{createFeed(image,mentions,invisibleMention); setVisibleLoading(true)}}>
                     <img src={"/create/write.svg"}/>
                     게시
                 </label>
@@ -97,6 +104,7 @@ export default function CreatePage(){
             <input id='file-input' type="file" accept="image/*" style={{"display":"none"}} onChange={uploadImage}/>
         </div>
         {visibleModal && <SearchMember addHandler={mentionAdd} onClose={closeModal}/>}
+        {visibleLoading && <LoadingModal open={true} onClose={null}> 게시글 업로드 중입니다.</LoadingModal>}
         </>
     )
 }

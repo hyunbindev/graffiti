@@ -11,23 +11,22 @@ import {useEffect, useCallback} from 'react';
 import { useInView } from 'react-intersection-observer';
 import {deleteWhisperFeed} from '@/model/FeedModel'
 import useLike from '@/viewmodel/useLike'
+import { useRouter } from "next/navigation";
 export default function WhisperDetail ({feed}) {
-    const { uuid } = useAuthStore();
+    const { uuid , nickName} = useAuthStore();
     const [imageLoaded, setImageLoaded] = useState(false);
     const {postLike, likeCount ,isLiked} = useLike(feed.id, feed.likeCount, feed.isLiked);
     const {comments, getNextPage, hasMore, text, setText, postgetComment, refreshComment} = useFeedComment(feed.id); 
-    
+    const router = useRouter();
     const [ref, inView] = useInView();
     
-const deleteFeed= async()=>{
-        // 1. 본인 게시글이 아니면 바로 리턴
+    const deleteFeed= async()=>{
         if(feed.author.uuid !== uuid) return;
         
-        // 2. 사용자에게 삭제 확인 받기
         const isConfirmed = confirm("정말로 게시글을 삭제하시겠습니까?");
 
         if (!isConfirmed) {
-            return; // 사용자가 취소하면 중단
+            return;
         }
 
         try{
@@ -36,7 +35,7 @@ const deleteFeed= async()=>{
             
             alert("게시글이 삭제되었습니다.");
             
-            window.location.href = '/feed'
+            router.replace('/feed');
 
         }catch(e){
             console.error("게시글 삭제 중 오류 발생:", e);
@@ -48,8 +47,9 @@ const deleteFeed= async()=>{
         if (inView && hasMore) {
             getNextPage();
         }
-    },[inView, hasMore, getNextPage]); 
-    
+    },[inView, hasMore, getNextPage]);
+
+
     return(
         <>
         <div className={style.detailContainer}>
@@ -108,6 +108,10 @@ const deleteFeed= async()=>{
                         <span style={{"color":"#EA3323"}}>게시글 삭제</span>
                     </div>
                 }
+                <div className={style.static} id={style.share} onClick={()=>kakaoShare(feed,nickName)}>
+                    <img src="/feed/share.svg" alt="share" />
+                    <span>공유</span>
+                </div>
             </div>
             <CommentField text={text} setText={setText} submitHandler={postgetComment}/>
             <div>
@@ -126,3 +130,59 @@ const deleteFeed= async()=>{
         </>
     );
 }
+function kakaoShare (feed, userNickname) {
+    console.log(feed.imageUrl)
+    const {Kakao} = window;
+    if(feed.mentionInvisible){
+        Kakao.Share.sendDefault({
+        objectType: 'feed',
+        content: {
+            title: `비공개 게시글을 공유했어요!!`,
+            description: `${userNickname}님이 비공개 게시글을 공유했어요!`,
+            imageUrl: ``,
+            link: { mobileWebUrl: `${process.env.NEXT_PUBLIC_CLIENT_URL}/`,}
+            },
+            buttons:[
+                {
+                    title: '게시글 확인하기',
+                    link: {
+                        mobileWebUrl:`${process.env.NEXT_PUBLIC_CLIENT_URL}/feed/${feed.id}`,
+                        webUrl:`${process.env.NEXT_PUBLIC_CLIENT_URL}/feed/${feed.id}`
+                    }
+                }
+            ]
+        });
+        return;
+    }
+    
+    Kakao.Share.sendDefault({
+    objectType: 'feed',
+    content: {
+        title: `${feed.author.nickName}이 작성한 게시글을 공유했어요!`,
+        description: truncateText(feed.text),
+        imageUrl: feed.imageUrl || '',
+        link: { mobileWebUrl:`${process.env.NEXT_PUBLIC_CLIENT_URL}/feed/${feed.id}`,}
+        },
+        buttons:[
+            {
+                title: '게시글 확인하기',
+                link: {
+                    mobileWebUrl:`${process.env.NEXT_PUBLIC_CLIENT_URL}/feed/${feed.id}`,
+                    webUrl:`${process.env.NEXT_PUBLIC_CLIENT_URL}/feed/${feed.id}`
+                }
+            }
+        ]
+    });
+}
+
+function truncateText (text, maxLength = 50) {
+    if (typeof text !== 'string' || !text) {
+        return '';
+    }
+
+    if (text.length <= maxLength) {
+        return text;
+    }
+
+    return text.slice(0, maxLength) + '...';
+};

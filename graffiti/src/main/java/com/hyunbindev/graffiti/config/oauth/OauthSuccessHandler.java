@@ -42,18 +42,27 @@ public class OauthSuccessHandler implements AuthenticationSuccessHandler  {
 		KakaoOauth2User  kakaoAuthentication = new KakaoOauth2User(oauthToken.getPrincipal());
 		kakaoAuthentication = memberService.assignMember(kakaoAuthentication);
 		
-		String accessToken = "Bearer "+ jwtTokenProvider.generateAccessToken(kakaoAuthentication);
+		String accessToken = jwtTokenProvider.generateAccessToken(kakaoAuthentication);
 		String refreshToken = jwtTokenProvider.generateRefreshToken(kakaoAuthentication);
 		Cookie refreshTokenCookie = new Cookie("refreshToken", refreshToken);
 		refreshTokenCookie.setHttpOnly(true);
 		refreshTokenCookie.setSecure(true);
 		refreshTokenCookie.setMaxAge((int) (jwtTokenProvider.getRefreshValidity() / 1000));
 		
+		Cookie accessTokenCookie = new Cookie("accessToken", accessToken);
+		accessTokenCookie.setHttpOnly(false);
+		refreshTokenCookie.setMaxAge((int) (jwtTokenProvider.getAccessTokenValiditiy() / 1000));
+		
+		
 		String redirectUrl = UriComponentsBuilder.fromUriString(redirectClientUrl+"/callback")
-				.queryParam("accessToken", URLEncoder.encode(accessToken, StandardCharsets.UTF_8.toString()))
+				.queryParam("accessToken", URLEncoder.encode("Bearer "+accessToken, StandardCharsets.UTF_8.toString()))
 				.build()
 				.toUriString();
+		
 		authenticationService.saveRefreshToken(kakaoAuthentication.getMemberUuid(), refreshToken);
+		
+		response.addCookie(accessTokenCookie);
+		response.addCookie(refreshTokenCookie);
 		response.sendRedirect(redirectUrl);
 	}
 }

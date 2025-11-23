@@ -24,6 +24,8 @@ public class OauthFailHandler implements AuthenticationFailureHandler {
 		response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 		response.setContentType("application/json;charset=UTF-8");
 		
+		log.error("ex : {}",exception);
+		
 		String responseBody = exception.getCause().getMessage();
 		log.error("fail to oauth2 authentication : {}",responseBody);
 	    int start = responseBody.indexOf("{");

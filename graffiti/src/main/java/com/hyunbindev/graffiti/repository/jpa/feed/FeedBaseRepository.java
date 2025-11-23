@@ -50,7 +50,7 @@ public interface FeedBaseRepository extends JpaRepository<FeedBaseEntity,Long> {
 			        feed_base_entity
 			    WHERE
 			        deleted = FALSE
-					AND group_id IN :groupIds
+					AND group_id = :groupId
 					AND id < :lastId
 			    ORDER BY id DESC
 			    LIMIT :size) AS fbe_ids
@@ -64,7 +64,7 @@ public interface FeedBaseRepository extends JpaRepository<FeedBaseEntity,Long> {
 			    whisper_entity we ON fbe.id = we.id
             """,
            nativeQuery = true)
-	List<FeedBaseEntity> findByDeletedIsFalseAndGroupIdInOrderByIdDesc(@Param("groupIds") List<String>groupIds, @Param("size")int size, @Param("lastId")Long lastId);
+	List<FeedBaseEntity> findByDeletedIsFalseAndGroupIdInOrderByIdDesc(@Param("groupId") String groupId, @Param("size")int size, @Param("lastId")Long lastId);
 	
 	/**
 	 * 그룹별 인기 게시글 조회

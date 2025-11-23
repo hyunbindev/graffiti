@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation";
 const useCreateWhisper = () => {
     const router = useRouter();
     const [text,setText] =useState("");
-    const { selectedGroup} = useAuthStore();
+    const { selectedGroup } = useAuthStore();
     const createFeed = async (image, mentions,invisibleMention)=>{
         const mentionUuids = mentions.map(member => member.uuid);
         try{

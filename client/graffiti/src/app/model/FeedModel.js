@@ -1,9 +1,9 @@
 import api from "../lib/api";
 
-export const getRecentFeeds = async (lastId, size) => {
+export const getRecentFeeds = async (lastId, size ,groupUuid) => {
     try{
         const res = await api.get(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/feed`,{
-            params: {lastId: lastId, size: size}
+            params: {lastId: lastId, size: size, groupId: groupUuid}
         });
         return res.data;
     }catch(error){
@@ -42,4 +42,8 @@ export const createWhiperFeed = async (groupUuid, image, text, mentions,invisibl
         console.error(e);
         throw e;
     }
+}
+
+export const getRankFeed=()=>{
+    
 }

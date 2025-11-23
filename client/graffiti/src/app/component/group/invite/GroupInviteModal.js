@@ -4,6 +4,7 @@ import * as React from 'react';
 
 import useGroupInvite from '@/viewmodel/group/useGroupInvite';
 
+import { InviteCodeKakaoShare } from '@/share/KakaoShare';
 
 import { useEffect } from 'react';
 
@@ -31,10 +32,10 @@ export default function GroupInviteModal({selectedGroup,setSelectedGroup}){
     const {inviteCode, getCode} = useGroupInvite();
 
     useEffect(()=>{
-        console.log(selectedGroup)
         getCode(selectedGroup.uuid);
         return;
     },[selectedGroup]);
+
     const handleCopy = async () => {
         if (!inviteCode) {
             alert("초대 코드가 발급되지 않았습니다.");
@@ -49,6 +50,27 @@ export default function GroupInviteModal({selectedGroup,setSelectedGroup}){
             alert("클립보드 복사에 실패했습니다. 브라우저 설정을 확인해 주세요.");
         }
     };
+    const InviteCodeKakaoShare = () =>{
+        const {Kakao} = window;
+        Kakao.Share.sendDefault({
+        objectType: 'feed',
+        content: {
+            title: `${selectedGroup.name} 초대장`,
+            description: `${selectedGroup.name}로 당신을 초대 합니다!!`,
+            imageUrl: ``,
+            link: { mobileWebUrl: `${process.env.NEXT_PUBLIC_CLIENT_URL}/`,}
+            },
+            buttons:[
+                {
+                    title: '참여하기',
+                    link: {
+                        mobileWebUrl:`${process.env.NEXT_PUBLIC_CLIENT_URL}/group/code/${inviteCode}`,
+                        webUrl:`${process.env.NEXT_PUBLIC_CLIENT_URL}/group/code/${inviteCode}`
+                    }
+                }
+            ]
+        });
+    }
     return(
         <Modal
             open={isOpen}
@@ -64,7 +86,7 @@ export default function GroupInviteModal({selectedGroup,setSelectedGroup}){
                 <div className={style.buttonGroup}>
                     <button onClick={handleClose}>닫기</button>
                     <button onClick={handleCopy} disabled={!inviteCode}>코드 복사</button>
-                    <button disabled={!inviteCode}>공유</button>
+                    <button disabled={!inviteCode} onClick={InviteCodeKakaoShare}>공유</button>
                 </div>
             </Box>
         </Modal>

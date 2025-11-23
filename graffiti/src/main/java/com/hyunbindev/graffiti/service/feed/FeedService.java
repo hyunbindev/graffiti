@@ -9,6 +9,7 @@ import com.hyunbindev.graffiti.constant.exception.MemberExceptionConst;
 import com.hyunbindev.graffiti.data.feed.PostPreViewDTO;
 import com.hyunbindev.graffiti.data.feed.SecretPreViewDTO;
 import com.hyunbindev.graffiti.data.feed.WhisperPreViewDTO;
+import com.hyunbindev.graffiti.entity.jpa.group.GroupEntity;
 import com.hyunbindev.graffiti.entity.jpa.member.MemberEntity;
 import com.hyunbindev.graffiti.entity.jpa.post.FeedBaseEntity;
 import com.hyunbindev.graffiti.entity.jpa.post.secret.SecretEntity;
@@ -29,6 +30,7 @@ import lombok.extern.slf4j.Slf4j;
 public class FeedService {
 	private final MemberRepository memberRepository;
 	private final ImageService imageService;
+	private final GroupRepository groupRepository;
 	private final FeedBaseRepository feedBaseRepository;
 	private final FeedLikeRepository feedLikeRepository;
 	//private final FeedBaseCustomRepsotory feedBaseCustomRepsotory;
@@ -40,20 +42,20 @@ public class FeedService {
 	 * @return
 	 */
 	@Transactional(readOnly=true)
-	public List<PostPreViewDTO> getRecentPostPreviewWithPage(String userUuid, Long lastId, int size) {
+	public List<PostPreViewDTO> getRecentPostPreviewWithPage(String userUuid, Long lastId, int size, String groupId) {
 		MemberEntity userEntity = memberRepository.findById(userUuid)
 				.orElseThrow(()-> new CommonAPIException(MemberExceptionConst.UNAUTHORIZED));
 		
+		GroupEntity groupEntity = groupRepository.findById(groupId)
+				.orElseThrow(()-> new CommonAPIException(MemberExceptionConst.UNAUTHORIZED));
 		
-		//사용자 그룹 리스트
-		List<String> groupIds = userEntity.getGroupLinks().stream()
-				.map((link)->link.getGroup().getId())
-				.toList();
+		if(!userEntity.isInGroup(groupEntity))
+			throw new CommonAPIException(MemberExceptionConst.UNAUTHORIZED);
 		
 		if(lastId==null)
 			lastId = Long.MAX_VALUE;
 		
-		List<FeedBaseEntity> feedBaseEntitys = feedBaseRepository.findByDeletedIsFalseAndGroupIdInOrderByIdDesc(groupIds, size, lastId);
+		List<FeedBaseEntity> feedBaseEntitys = feedBaseRepository.findByDeletedIsFalseAndGroupIdInOrderByIdDesc(groupId, size, lastId);
 		
 		
 		
