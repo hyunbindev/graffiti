@@ -17,3 +17,7 @@ management:
   endpoint:
     prometheus:
       enabled: true
+
+  output:
+    ansi:
+      enabled: always

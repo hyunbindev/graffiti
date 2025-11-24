@@ -1,0 +1,10 @@
+server:
+  port: 8070
+spring:
+  application:
+    name: notification
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:local}
+  output:
+    ansi:
+      enabled: always

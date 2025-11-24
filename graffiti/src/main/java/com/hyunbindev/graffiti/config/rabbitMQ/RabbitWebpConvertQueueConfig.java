@@ -25,8 +25,8 @@ public class RabbitWebpConvertQueueConfig {
 	public DirectExchange webpConvertExchange() {
 		return new DirectExchange(Config.EXHANGE.getValue(), true, false);
 	}
-	@Bean
-	public Binding notificationBinding(@Qualifier("webpConvertQueue")Queue queue, @Qualifier("webpConvertExchange")DirectExchange exchange) {
+	@Bean("webpConvertBinding")
+	public Binding webpConvertBinding(@Qualifier("webpConvertQueue")Queue queue, @Qualifier("webpConvertExchange")DirectExchange exchange) {
 		return BindingBuilder.bind(queue)
 				.to(exchange)
 				.with(Config.ROUTING.getValue());
@@ -36,7 +36,6 @@ public class RabbitWebpConvertQueueConfig {
 	    return new Jackson2JsonMessageConverter();
 	}
 	
-	@Bean
 	public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory) {
 	    RabbitTemplate template = new RabbitTemplate(connectionFactory);
 	    template.setMessageConverter(jackson2JsonMessageConverter());

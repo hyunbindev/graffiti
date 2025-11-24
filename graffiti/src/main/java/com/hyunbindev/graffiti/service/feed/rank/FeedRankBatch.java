@@ -45,6 +45,9 @@ public class FeedRankBatch {
 				ZSetOperations.TypedTuple<String> tuple = ZSetOperations.TypedTuple.of(result.getFeedId().toString(), result.getScore());
 				tuples.add(tuple);
 			});
+			//게시글이 없어 결과 값이 비어 있을 시
+			if(tuples.isEmpty()) return;
+			
 			redisTemplate.opsForZSet().add(RANK_KEY_PATTERN+":"+group.getId(), tuples);
 			redisTemplate.expire(RANK_KEY_PATTERN+":"+group.getId(), 7, TimeUnit.HOURS);
 		}); 

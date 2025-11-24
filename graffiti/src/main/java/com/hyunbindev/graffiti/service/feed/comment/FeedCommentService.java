@@ -6,16 +6,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
-
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.hyunbindev.graffiti.constant.exception.MemberExceptionConst;
 import com.hyunbindev.graffiti.constant.exception.WhisperExceptionConst;
 import com.hyunbindev.graffiti.data.feed.FeedCommentDTO;
+import com.hyunbindev.graffiti.data.notification.CommentNotificationDTO;
 import com.hyunbindev.graffiti.data.whisper.CreateCommentDTO;
 import com.hyunbindev.graffiti.entity.jpa.member.MemberEntity;
 import com.hyunbindev.graffiti.entity.jpa.post.FeedBaseEntity;
@@ -25,6 +24,7 @@ import com.hyunbindev.graffiti.exception.CommonAPIException;
 import com.hyunbindev.graffiti.repository.jpa.MemberRepository;
 import com.hyunbindev.graffiti.repository.jpa.feed.FeedBaseRepository;
 import com.hyunbindev.graffiti.repository.jpa.feed.FeedCommentRepository;
+import com.hyunbindev.graffiti.service.notification.NotificationProducer;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -38,6 +38,7 @@ public class FeedCommentService {
 	private final MemberRepository memberRepository;
 	private final FeedCommentCountService feedCommentCountService;
 	private final JdbcTemplate jdbcTemplate;
+	private final NotificationProducer notificationProducer;
 	/**
 	 * feed 덧글 생성
 	 * @author hyunbinDev
@@ -81,6 +82,11 @@ public class FeedCommentService {
 		//덧글 저장
 		feedCommentCountService.incrementCommentCount(whisperFeedId);
 		feedCommentRepository.save(comment);
+		
+		CommentNotificationDTO commentNotification = CommentNotificationDTO.mappingDTO(feed, comment);
+		
+		//알림 발행
+		notificationProducer.pubCommentNotification(commentNotification);
 	}
 	/**
 	 * whisper feed comment 조회

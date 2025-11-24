@@ -11,6 +11,7 @@ import org.springframework.transaction.event.TransactionalEventListener;
 
 import com.hyunbindev.graffiti.constant.exception.MemberExceptionConst;
 import com.hyunbindev.graffiti.constant.exception.WhisperExceptionConst;
+import com.hyunbindev.graffiti.data.notification.MentionNotificationDTO;
 import com.hyunbindev.graffiti.data.whisper.WhisperCreateDTO;
 import com.hyunbindev.graffiti.data.whisper.WhisperDTO;
 import com.hyunbindev.graffiti.entity.jpa.group.GroupEntity;
@@ -22,10 +23,10 @@ import com.hyunbindev.graffiti.repository.jpa.MemberRepository;
 import com.hyunbindev.graffiti.repository.jpa.group.GroupRepository;
 import com.hyunbindev.graffiti.repository.jpa.whisper.WhisperRepository;
 import com.hyunbindev.graffiti.service.feed.comment.FeedCommentCountService;
-import com.hyunbindev.graffiti.service.feed.comment.FeedCommentService;
 import com.hyunbindev.graffiti.service.feed.like.FeedLikeService;
 import com.hyunbindev.graffiti.service.feed.view.FeedViewService;
 import com.hyunbindev.graffiti.service.image.ImageService;
+import com.hyunbindev.graffiti.service.notification.NotificationProducer;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -42,7 +43,7 @@ public class WhisperService {
 	
 	private final FeedViewService feedViewService;
 	private final FeedLikeService feedLikeService;
-	private final FeedCommentService feedCommentService;
+	private final NotificationProducer notificationProducer;
 	private final FeedCommentCountService feedCommentCountService;
 	private final ImageService imageService;
 	
@@ -87,7 +88,16 @@ public class WhisperService {
 		if(createDto.isInvisibleMention()) {
 			whisperEntityBuilder.invisibleMention(true);
 		}
-		return whisperRepository.save(whisperEntityBuilder.build()).getId();
+		
+		WhisperEntity whisper = whisperEntityBuilder.build();
+		
+		
+		//이벤트 발행
+		
+		whisper = whisperRepository.save(whisper);
+		MentionNotificationDTO notification = MentionNotificationDTO.mappingDTO(whisper);
+		notificationProducer.pubMentionNotification(notification);
+		return whisper.getId();
 	}
 	/**
 	 * 이미지와 함께 저장
@@ -132,8 +142,13 @@ public class WhisperService {
 		//커밋 실패시 이미지 삭제메세지 발행
 		eventPublisher.publishEvent(new WhisperFeedRollBackEvent(imageName));
 		
+		WhisperEntity whisper = whisperEntityBuilder.build();
 		
-		return whisperRepository.save(whisperEntityBuilder.build()).getId();
+		whisper = whisperRepository.save(whisper);
+		MentionNotificationDTO notification = MentionNotificationDTO.mappingDTO(whisper);
+		notificationProducer.pubMentionNotification(notification);
+		
+		return whisper.getId();
 	}
 	/**
 	 * 게시글 Transaction 실패시 이미지 삭제
