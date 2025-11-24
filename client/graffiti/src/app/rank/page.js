@@ -6,10 +6,9 @@ import useRankFeed from "@/viewmodel/useRankFeed";
 import { useInView } from 'react-intersection-observer';
 import { useEffect } from "react";
 
-export default function RnakFeedPage() {
+export default function RecentFeedPage() {
   const {feeds,getNextPage}=useRankFeed(10);
   const [ref, inView] = useInView();
-  useEffect(()=>{getNextPage()},[inView]);
   return (
     <>
     <div style={{"marginTop":"3rem"}}>

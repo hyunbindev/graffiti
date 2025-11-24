@@ -57,3 +57,17 @@ services:
       RABBITMQ_DEFAULT_PASS: admin
     volumes:
       - ./volume/rabbitmq:/var/lib/rabbitmq
+
+  mongo:
+    image: mongo:latest
+    container_name: mongo
+    restart: always
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: admin
+      MONGO_INITDB_DATABASE: graffiti_notification
+
+    volumes:
+      - ./volume/mongodb:/data/db
