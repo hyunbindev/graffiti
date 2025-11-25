@@ -4,12 +4,10 @@ import style from './GroupPage.module.css'
 import GroupElement from '@/component/group/GroupElement'
 import { useAuthStore } from '@/zustand/useAuthStore.js';
 import GroupInviteModal from '@/component/group/invite/GroupInviteModal'
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 export default function GroupPage(){
     const { groups } = useAuthStore();
     const [selectedGroup, setSelectedGroup] = useState(null);
-
-    useEffect(()=>console.log(selectedGroup),[selectedGroup]);
 
     return(
     <>
@@ -18,7 +16,7 @@ export default function GroupPage(){
         <h2 style={{"marginBottom":"0.5rem"}}>그룹 관리</h2>
         <div className={style.groupContainer}>
             {
-                groups.map((group,idx)=>(<GroupElement key={idx} group={group} setSelectedGroup={setSelectedGroup}/>))
+                groups && groups.map((group,idx)=>(<GroupElement key={idx} group={group} setSelectedGroup={setSelectedGroup}/>))
             }
         </div>
         <Link href="/group/create">

@@ -1,52 +1,16 @@
-"use client";
+import { Suspense } from 'react';
+import AuthenticationCallback from './AuthenticationCallback'; 
 
-import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect } from "react";
-import { useAuthStore } from '../zustand/useAuthStore'
-import axios from "axios";
-import LoadingComponent from "../component/loading/LoadingComponent";
-import api from '@/lib/api'
-
-export default function AuthenticationCallback() {
-    const router = useRouter();
-    const searchParams = useSearchParams();
-
-    const setToken = useAuthStore((state) => state.setToken);
-    const setUserInfo = useAuthStore((state) => state.setUserInfo);
-    const setGroups = useAuthStore((state) => state.setGroups);
-    const setSelectedGroup = useAuthStore((state) => state.setSelectedGroup);
-
-    useEffect(()=>{
-        const accessToken = searchParams.get("accessToken");
-        setToken(accessToken);
-        axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/member/me`,{
-            headers: {
-                Authorization: `${accessToken}`,},withCredentials: true
-        }).then((response) => {
-            const { uuid, nickName, profileImg } = response.data;
-            setUserInfo(uuid, nickName, profileImg);
-
-            api.get(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/member/group/me`)
-            .then((res)=>{
-                setGroups(res.data);
-                setSelectedGroup(res.data[0]);
-            })
-            const redirect = sessionStorage.getItem("redirect");
-            if(!redirect){
-                return router.push("/feed");
-            }
-            sessionStorage.removeItem("redirect");
-            router.push(redirect);
-
-        }).catch((error) => {
-            console.error(error);
-            router.push("/login");
-        });
-    },[]);
-    
-    return (
-        <LoadingComponent>
-            로그인 중입니다.
-        </LoadingComponent>
-    );
+export default function CallbackPage() {
+  return (
+    // 서버 측 렌더링 시 useSearchParams를 사용하는 컴포넌트의 실행을 지연시킵니다.
+    <Suspense fallback={
+        <div style={{ padding: '40px', textAlign: 'center' }}>
+            로그인 정보 확인 중...
+        </div>
+    }>
+      {/* ⬇️ useSearchParams 훅을 포함한 실제 로직을 담은 컴포넌트 */}
+      <AuthenticationCallback />
+    </Suspense>
+  );
 }
