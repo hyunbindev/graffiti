@@ -6,7 +6,6 @@ import { useAuthStore } from '../zustand/useAuthStore'
 import axios from "axios";
 import LoadingComponent from "../component/loading/LoadingComponent";
 import api from '@/lib/api'
-import { red } from "@mui/material/colors";
 
 export default function AuthenticationCallback() {
     const router = useRouter();

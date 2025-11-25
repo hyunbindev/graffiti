@@ -1,0 +1,14 @@
+div.NotificationElement{
+    display: flex;
+    padding: 0.6rem;
+    align-items: center;
+    background-color: white;
+    border-radius: 10px;
+    margin:0.5rem;
+}
+.NotificationElement img{
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    margin-right: 1rem;
+}
