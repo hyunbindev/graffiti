@@ -93,7 +93,6 @@ public class WhisperService {
 		
 		
 		//이벤트 발행
-		
 		whisper = whisperRepository.save(whisper);
 		MentionNotificationDTO notification = MentionNotificationDTO.mappingDTO(whisper);
 		notificationProducer.pubMentionNotification(notification);

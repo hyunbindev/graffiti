@@ -1,6 +1,7 @@
 package com.hyunbindev.graffiti.data.notification;
 
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -12,7 +13,10 @@ import lombok.Builder;
 import lombok.Getter;
 
 @Builder
-public class MentionNotificationDTO {
+public class MentionNotificationDTO implements Serializable{
+	
+	private static final long serialVersionUID = 853962263682477389L;
+
 	@Getter
 	private Long feedId;
 	
@@ -20,7 +24,7 @@ public class MentionNotificationDTO {
 	private MemberInfoDTO feedAuthor;
 	
 	@Getter
-	private boolean isInvisible;
+	private Boolean isInvisible;
 	
 	@Getter
 	private List<String> receiverUuids;
@@ -32,7 +36,7 @@ public class MentionNotificationDTO {
 				.isInvisible(whisperEntity.isInvisibleMention())
 				.receiverUuids(
 				    Optional.ofNullable(whisperEntity.getMentionMembers())
-				            .orElse(Collections.emptyList()) // null이면 빈 리스트
+				            .orElse(Collections.emptyList())
 				            .stream()
 				            .map(m -> m.getId())
 				            .toList())

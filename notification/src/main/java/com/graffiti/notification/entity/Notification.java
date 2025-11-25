@@ -8,11 +8,15 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import com.graffiti.notification.constant.NotificationType;
 import com.graffiti.notification.data.MemberInfoDTO;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Builder
 @Document(collection = "notifications")
+@NoArgsConstructor
+@AllArgsConstructor
 public class Notification {
 	@Id
 	@Getter

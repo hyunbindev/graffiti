@@ -19,14 +19,13 @@ public class MentionNotificationService {
 	    for(String mentionUuid : notificationDTO.getReceiverUuids()) {
 	        Notification notification = Notification.builder()
 	            .type(NotificationType.MENTION)
-	            .sender(notificationDTO.getFeedAuthor())
+	            .sender(notificationDTO.getIsInvisible()? null : notificationDTO.getFeedAuthor())
 	            .receiverUuid(mentionUuid)
-	            .content(notificationDTO.isInvisible()
+	            .content(notificationDTO.getIsInvisible()
 	                        ? "누군가 당신을 지목했어요"
 	                        : notificationDTO.getFeedAuthor().getNickName() + "님이 당신을 언급했어요.")
-	            .feedId(notificationDTO.isInvisible() ? null : notificationDTO.getFeedId())
+	            .feedId(notificationDTO.getIsInvisible() ? null : notificationDTO.getFeedId())
 	            .build();
-	        log.info("{}",notificationDTO.getFeedId());
 	        notificationRepository.save(notification);
 	    }
 	}

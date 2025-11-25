@@ -8,9 +8,11 @@ import com.hyunbindev.graffiti.data.notification.CommentNotificationDTO;
 import com.hyunbindev.graffiti.data.notification.MentionNotificationDTO;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class NotificationProducer {
 	private final RabbitTemplate rabbitTemplate;
 	/**
