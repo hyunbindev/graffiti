@@ -73,7 +73,6 @@ public class FeedService {
 		
 		boolean isLiked = feedLikeRepository.existsByFeedIdAndLikerId(entity.getId(), userEntity.getId());
 		if(entity instanceof WhisperEntity whisper) {
-	        // ⭐️ 방어 로직 적용 (Whisper DTO 매핑 메서드 내부로 이동 권장)
 	        if(whisper.getImageName() != null) {
 	            String imageUrl = imageService.getPresignedUrl(whisper.getImageName());
 	            return WhisperPreViewDTO.mappingDTO(whisper,userEntity,imageUrl,isLiked);
@@ -83,7 +82,6 @@ public class FeedService {
 	    
 	    // Secret 게시글일 경우 dto 매핑
 	    if(entity instanceof SecretEntity secret) {
-	        // ⭐️ 방어 로직 적용 (Secret DTO 매핑 메서드 내부로 이동 권장)
 	        return SecretPreViewDTO.mappingDTO(secret,isLiked);
 	    }
 		return null;
